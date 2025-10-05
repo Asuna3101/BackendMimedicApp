@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.api.v1.endpoints import auth
 from app.core.database import engine
 from app.models import base
+from app.api.v1.endpoints import healthcare
 
 # Crear tablas en la base de datos
 base.Base.metadata.create_all(bind=engine)
@@ -31,6 +32,7 @@ app.add_middleware(
 
 # Incluir solo router de autenticación
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["authentication"])
+app.include_router(healthcare.router, prefix=f"{settings.API_V1_STR}/health", tags=["health"]) 
 
 @app.get("/")
 def read_root():
