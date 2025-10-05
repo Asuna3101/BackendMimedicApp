@@ -50,3 +50,17 @@ class UserController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Error interno del servidor"
             )
+
+    def register_user(self, correo: str, password: str, nombre: str, fecha_nacimiento, celular: str):
+        """Registrar usuario delegando en el servicio de usuarios"""
+        try:
+            created = self.service.register_user(
+                correo=correo,
+                password=password,
+                nombre=nombre,
+                fecha_nacimiento=fecha_nacimiento,
+                celular=celular,
+            )
+            return created
+        except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
