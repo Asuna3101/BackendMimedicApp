@@ -43,7 +43,7 @@ class MedicamentoUsuarioService:
         return {
             "id": medicamento.id,
             "nombre": medicamento.nombre,
-            "message": "Medicamento asociado al usuario y tomas generadas correctamente.",
+            "message": "Medicamento guardado correctamente",
         }
 
     def obtener_medicamentos_por_usuario(self, id_usuario: int):
