@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.v1.endpoints import auth
+from app.api.v1.endpoints import auth, medicamentoxusuario, toma, medicamento, unidad
 from app.core.database import engine
 from app.models import base
 
@@ -31,6 +31,35 @@ app.add_middleware(
 
 # Incluir solo router de autenticación
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["authentication"])
+
+# Router de medicamentosUsuario
+app.include_router(
+    medicamentoxusuario.router,
+    prefix=f"{settings.API_V1_STR}/medicamentos",
+    tags=["medicamentos-usuario"],
+)
+
+# Router de unidades
+app.include_router(
+    unidad.router,
+    prefix=f"{settings.API_V1_STR}/unidades",
+    tags=["catalogo-unidades"]
+)
+
+# Router de medicamentos
+app.include_router(
+    medicamento.router,
+    prefix=f"{settings.API_V1_STR}/medicamentos",
+    tags=["catalogo-medicamentos"]
+)
+
+# Router de tomas
+app.include_router(
+    toma.router,
+    prefix=f"{settings.API_V1_STR}/tomas",
+    tags=["tomas"],
+)
+
 
 @app.get("/")
 def read_root():

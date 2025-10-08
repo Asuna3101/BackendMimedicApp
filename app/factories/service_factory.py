@@ -11,6 +11,16 @@ from app.repositories.user_repository import UserRepository
 from app.auth.password_hasher import BcryptPasswordHasher
 from app.auth.token_generator import JWTTokenGenerator
 
+from app.repositories.medicamento_repo import MedicamentoRepository
+from app.repositories.unidad_repo import UnidadRepository
+from app.repositories.medicamentoUsuario_repo import MedicamentoUsuarioRepository
+from app.repositories.toma_repo import TomaRepository
+
+from app.services.medicamentoUsuario_service import MedicamentoUsuarioService
+from app.services.medicamento_service import MedicamentoService
+from app.services.unidad_service import UnidadService
+from app.services.toma_service import TomaService
+
 
 class ServiceFactory:
     """Factory para crear servicios con sus dependencias inyectadas"""
@@ -47,3 +57,62 @@ class ServiceFactory:
         """Crear servicio de autenticación"""
         from app.services.auth_service import AuthService
         return AuthService(user_service, token_generator)
+    
+    # ====== MEDICAMENTO ======
+    @staticmethod
+    def create_medicamento_repository(db: Session) -> MedicamentoRepository:
+        return MedicamentoRepository(db)
+
+    @staticmethod
+    def create_unidad_repository(db: Session) -> UnidadRepository:
+        return UnidadRepository(db)
+
+    @staticmethod
+    def create_medicamento_service(med_repo: MedicamentoRepository) -> MedicamentoService:
+        return MedicamentoService(med_repo)
+
+    @staticmethod
+    def create_unidad_service(unidad_repo: UnidadRepository) -> UnidadService:
+        return UnidadService(unidad_repo)
+
+    # ====== NUEVOS: MEDICAMENTO x USUARIO ======
+    @staticmethod
+    def create_medicamento_x_usuario_repository(db: Session) -> MedicamentoUsuarioRepository:
+        return MedicamentoUsuarioRepository(db)
+
+    @staticmethod
+    def create_medicamento_x_usuario_service(
+        med_repo: MedicamentoRepository,
+        unidad_repo: UnidadRepository,
+        medxuser_repo: MedicamentoUsuarioRepository,
+    ) -> MedicamentoUsuarioService:
+        return MedicamentoUsuarioService(med_repo, unidad_repo, medxuser_repo)
+
+    # ====== MEDICAMENTOS ======
+    
+    @staticmethod
+    def create_medicamento_repository(db):
+        return MedicamentoRepository(db)
+
+    @staticmethod
+    def create_medicamento_service(med_repo):
+        return MedicamentoService(med_repo)
+    
+    # ====== UNIDADES ======
+    
+    @staticmethod
+    def create_unidad_repository(db):
+        return UnidadRepository(db)
+
+    @staticmethod
+    def create_unidad_service(unidad_repo):
+        return UnidadService(unidad_repo)
+
+    # ====== TOMAS ======
+    @staticmethod
+    def create_toma_repository(db: Session) -> TomaRepository:
+        return TomaRepository(db)
+
+    @staticmethod
+    def create_toma_service(toma_repo: TomaRepository) -> TomaService:
+        return TomaService(toma_repo)
