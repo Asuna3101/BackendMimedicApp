@@ -13,3 +13,11 @@ class Token(BaseModel):
 class UserLogin(BaseModel):
     correo: EmailStr
     password: str
+
+
+class UserCreate(BaseModel):
+    correo: EmailStr
+    password: str
+    nombre: str
+    fecha_nacimiento: str  # ISO date (YYYY-MM-DD)
+    celular: str
