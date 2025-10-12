@@ -14,7 +14,9 @@ class UserController:
         # Crear servicios necesarios para autenticación
         repository = ServiceFactory.create_user_repository(db)
         password_hasher = ServiceFactory.create_password_hasher()
+        token_generator = ServiceFactory.create_token_generator()
         self.service = ServiceFactory.create_user_service(repository, password_hasher)
+        self.auth_service = ServiceFactory.create_auth_service(self.user_service, token_generator)
     
     def authenticate_user(self, correo: str, password: str) -> dict:
         """Autenticar usuario y generar token"""
