@@ -1,7 +1,9 @@
 """
 Repositorio para MedicamentoUsuario
 """
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
+from app.interfaces.medicamento_usuario_repository_interface import IMedicamentoUsuarioRepository
 from app.models.medicamento import Medicamento
 from app.models.medicamentoUsuario import MedicamentoUsuario
 from app.models.toma import Toma
@@ -10,7 +12,7 @@ from datetime import timedelta
 from app.models.unidad import Unidad
 
 
-class MedicamentoUsuarioRepository:
+class MedicamentoUsuarioRepository(IMedicamentoUsuarioRepository):
     def __init__(self, db: Session):
         self.db = db
 
@@ -42,5 +44,6 @@ class MedicamentoUsuarioRepository:
             .join(Medicamento, Medicamento.id == MedicamentoUsuario.idMedicamento)
             .join(Unidad, Unidad.id == MedicamentoUsuario.idUnidad)
             .filter(MedicamentoUsuario.idUsuario == id_usuario)
+            .order_by(desc(MedicamentoUsuario.createdAt))
             .all()
         )

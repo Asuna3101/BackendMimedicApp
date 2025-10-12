@@ -1,11 +1,12 @@
 """
 Servicio de catálogo de medicamentos
 """
-from app.repositories.medicamento_repo import MedicamentoRepository
+from app.interfaces.medicamento_repository_interface import IMedicamentoRepository
+from app.interfaces.medicamento_service_interface import IMedicamentoService
 
 
-class MedicamentoService:
-    def __init__(self, med_repo: MedicamentoRepository):
+class MedicamentoService(IMedicamentoService):
+    def __init__(self, med_repo: IMedicamentoRepository):
         self.med_repo = med_repo
 
     def get_or_create(self, nombre: str):

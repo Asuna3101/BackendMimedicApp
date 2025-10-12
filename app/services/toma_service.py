@@ -1,11 +1,12 @@
 """
 Servicio para gestión de tomas 
 """
-from app.repositories.toma_repo import TomaRepository
+from app.interfaces.toma_repository_interface import ITomaRepository
+from app.interfaces.toma_service_interface import ITomaService
 
 
-class TomaService:
-    def __init__(self, toma_repo: TomaRepository):
+class TomaService(ITomaService):
+    def __init__(self, toma_repo: ITomaRepository):
         self.toma_repo = toma_repo
 
     def marcar_toma(self, toma_id: int, tomado: bool):

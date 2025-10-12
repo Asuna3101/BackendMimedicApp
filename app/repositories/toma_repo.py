@@ -3,10 +3,11 @@ Repositorio para tomas
 """
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from app.interfaces.toma_repository_interface import ITomaRepository
 from app.models.toma import Toma
 
 
-class TomaRepository:
+class TomaRepository(ITomaRepository):
     def __init__(self, db: Session):
         self.db = db
 

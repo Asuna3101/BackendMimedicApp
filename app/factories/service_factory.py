@@ -7,6 +7,8 @@ from app.interfaces.medicamento_repository_interface import IMedicamentoReposito
 from app.interfaces.medicamento_service_interface import IMedicamentoService
 from app.interfaces.medicamento_usuario_repository_interface import IMedicamentoUsuarioRepository
 from app.interfaces.medicamento_usuario_service_interface import IMedicamentoUsuarioService
+from app.interfaces.toma_repository_interface import ITomaRepository
+from app.interfaces.toma_service_interface import ITomaService
 from app.interfaces.unidad_repository_interface import IUnidadRepository
 from app.interfaces.unidad_service_interface import IUnidadService
 from app.interfaces.user_service_interface import IUserService
@@ -81,6 +83,16 @@ class ServiceFactory:
     @staticmethod
     def create_unidad_service(unidad_repo: IUnidadRepository) -> IUnidadService:
         return UnidadService(unidad_repo)
+    
+    # ====== UNIDAD ======
+    @staticmethod
+    def create_toma_repository(db: Session) -> ITomaRepository:
+        return TomaRepository(db)
+
+    @staticmethod
+    def create_toma_service(toma_repo: ITomaRepository) -> ITomaService:
+        return TomaService(toma_repo)
+
 
     # ====== MEDICAMENTO x USUARIO ======
     @staticmethod

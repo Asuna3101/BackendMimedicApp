@@ -2,10 +2,11 @@
 Repositorio para unidades (catálogo global)
 """
 from sqlalchemy.orm import Session
+from app.interfaces.unidad_repository_interface import IUnidadRepository
 from app.models.unidad import Unidad
 
 
-class UnidadRepository:
+class UnidadRepository(IUnidadRepository):
     def __init__(self, db: Session):
         self.db = db
 

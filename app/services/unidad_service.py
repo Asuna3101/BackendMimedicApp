@@ -1,11 +1,12 @@
 """
 Servicio de catálogo de unidades
 """
-from app.repositories.unidad_repo import UnidadRepository
+from app.interfaces.unidad_repository_interface import IUnidadRepository
+from app.interfaces.unidad_service_interface import IUnidadService
 
 
-class UnidadService:
-    def __init__(self, unidad_repo: UnidadRepository):
+class UnidadService(IUnidadService):
+    def __init__(self, unidad_repo: IUnidadRepository):
         self.unidad_repo = unidad_repo
 
     def get_or_create(self, nombre: str):
