@@ -54,3 +54,13 @@ def register(
         return {"id": user.id, "correo": user.correo}
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    
+    def get_current_user_from_token(self, token: str):
+        """Obtiene el usuario autenticado a partir del token."""
+        user = self.auth_service.get_user_from_token(token)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token inválido o usuario no encontrado"
+            )
+        return user

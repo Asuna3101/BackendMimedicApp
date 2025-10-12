@@ -9,7 +9,7 @@ from starlette.requests import Request
 from app.core.config import settings
 from app.core.database import engine
 from app.models import base
-from app.api.v1.endpoints import auth, healthcare
+from app.api.v1.endpoints import auth, citas, healthcare
 
 # Crear tablas
 base.Base.metadata.create_all(bind=engine)
@@ -46,6 +46,12 @@ app.add_middleware(PrivateNetworkMiddleware)      # ← FALTABA
 # Routers
 app.include_router(auth.router,       prefix=f"{settings.API_V1_STR}/auth",   tags=["authentication"])
 app.include_router(healthcare.router, prefix=f"{settings.API_V1_STR}/health", tags=["health"])
+
+app.include_router(
+    citas.router,
+    prefix=f"{settings.API_V1_STR}/citas",
+    tags=["citas-usuario"],
+)
 
 @app.get("/")
 def read_root():
