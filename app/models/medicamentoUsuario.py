@@ -14,7 +14,7 @@ class MedicamentoUsuario(Base):
     idUnidad = Column(Integer, ForeignKey("unidades.id", ondelete="CASCADE"), nullable=False)
     
     dosis = Column(Float, nullable=False)
-    frecuencia_horas = Column(Integer, nullable=False)
+    frecuencia_horas = Column(Float, nullable=False)
     fecha_inicio = Column(DateTime(timezone=True), nullable=False)
     fecha_fin = Column(DateTime(timezone=True), nullable=False)
 

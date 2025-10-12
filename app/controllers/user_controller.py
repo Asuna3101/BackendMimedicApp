@@ -11,19 +11,19 @@ class UserController:
     """Controlador simplificado solo para login"""
     
     def __init__(self, db: Session):
-        # Crear servicios necesarios para autenticación
         repository = ServiceFactory.create_user_repository(db)
         password_hasher = ServiceFactory.create_password_hasher()
         token_generator = ServiceFactory.create_token_generator()
-        self.service = ServiceFactory.create_user_service(repository, password_hasher)
+
+        self.user_service = ServiceFactory.create_user_service(repository, password_hasher)
         self.auth_service = ServiceFactory.create_auth_service(self.user_service, token_generator)
-    
+
     def authenticate_user(self, correo: str, password: str) -> dict:
         """Autenticar usuario y generar token"""
         try:
             # Crear servicio de autenticación
             token_generator = ServiceFactory.create_token_generator()
-            auth_service = ServiceFactory().create_auth_service(self.service, token_generator)
+            auth_service = ServiceFactory().create_auth_service(self.user_service, token_generator)
             
             # Autenticar y crear token
             auth_result = auth_service.authenticate_and_create_token(correo, password)
@@ -56,7 +56,7 @@ class UserController:
     def register_user(self, correo: str, password: str, nombre: str, fecha_nacimiento, celular: str):
         """Registrar usuario delegando en el servicio de usuarios"""
         try:
-            created = self.service.register_user(
+            created = self.user_service.register_user(
                 correo=correo,
                 password=password,
                 nombre=nombre,

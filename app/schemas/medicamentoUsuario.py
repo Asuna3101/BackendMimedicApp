@@ -9,7 +9,7 @@ class MedicamentoUsuarioCreate(BaseModel):
     nombre: str
     dosis: float
     unidad: str
-    frecuencia_horas: int
+    frecuencia_horas: float
     fecha_inicio: datetime
     fecha_fin: datetime
 

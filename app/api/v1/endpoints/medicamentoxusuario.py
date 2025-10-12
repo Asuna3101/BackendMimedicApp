@@ -28,10 +28,10 @@ def registrar_medicamento_usuario(
     controller = MedicamentoUsuarioController(db)
     return controller.registrar_medicamento_usuario(user.id, data)
 
-@router.get("/usuario/{id_usuario}")
-def listar_medicamentos_usuario(
-    id_usuario: int,
-    db: Session = Depends(get_db)
+@router.get("/usuario/lista")
+def listar_mis_medicamentos(
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)  # ✅ obtiene el usuario desde el token
 ):
     controller = MedicamentoUsuarioController(db)
-    return controller.obtener_medicamentos_usuario(id_usuario)
+    return controller.obtener_medicamentos_usuario(user.id)
