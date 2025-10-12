@@ -61,3 +61,11 @@ class AuthService:
             subject=user.correo,
             expires_delta=expires_delta
         )
+        
+    def get_user_from_token(self, token: str) -> Optional[User]:
+        email = self.verify_token(token)
+        if not email:
+            return None
+
+        user = self.user_service.get_user_by_email(email)
+        return user

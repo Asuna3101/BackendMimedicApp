@@ -1,25 +1,32 @@
 """
-Endpoint para registrar medicamentos asociados a un usuario
+Endpoint para registrar medicamentos 
 """
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from app.controllers.medicamento_controller import MedicamentoController
 from app.core.database import get_db
 from app.controllers.medicamentoUsuario_controller import MedicamentoUsuarioController
+from app.api.v1.endpoints.dependencies import get_current_user 
 from app.schemas.medicamentoUsuario import (
     MedicamentoUsuarioCreate,
 )
 
 router = APIRouter()
 
+@router.get("/")
+def listar_medicamentos(db: Session = Depends(get_db)):
+    controller = MedicamentoController(db)
+    return controller.listar_todos()
+
 @router.post("/usuario/registrar")
 def registrar_medicamento_usuario(
     data: MedicamentoUsuarioCreate,
     db: Session = Depends(get_db),
     # ⚠️ En producción, obtén el id_usuario desde el JWT
-    id_usuario: int = 1,
+    user=Depends(get_current_user), 
 ):
     controller = MedicamentoUsuarioController(db)
-    return controller.registrar_medicamento_usuario(id_usuario, data)
+    return controller.registrar_medicamento_usuario(user.id, data)
 
 @router.get("/usuario/{id_usuario}")
 def listar_medicamentos_usuario(

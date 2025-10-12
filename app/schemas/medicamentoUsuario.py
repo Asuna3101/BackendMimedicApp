@@ -1,13 +1,13 @@
 """
 Schemas para registro de medicamentos asociados a usuarios
 """
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from datetime import datetime
 
 
 class MedicamentoUsuarioCreate(BaseModel):
     nombre: str
-    dosis: int
+    dosis: float
     unidad: str
     frecuencia_horas: int
     fecha_inicio: datetime
