@@ -3,6 +3,12 @@ Factory Pattern para crear servicios y dependencias
 Implementa Dependency Injection (DIP)
 """
 from sqlalchemy.orm import Session
+from app.interfaces.medicamento_repository_interface import IMedicamentoRepository
+from app.interfaces.medicamento_service_interface import IMedicamentoService
+from app.interfaces.medicamento_usuario_repository_interface import IMedicamentoUsuarioRepository
+from app.interfaces.medicamento_usuario_service_interface import IMedicamentoUsuarioService
+from app.interfaces.unidad_repository_interface import IUnidadRepository
+from app.interfaces.unidad_service_interface import IUnidadService
 from app.interfaces.user_service_interface import IUserService
 from app.interfaces.user_repository_interface import IUserRepository
 from app.interfaces.auth_interface import IPasswordHasher, ITokenGenerator
@@ -60,59 +66,31 @@ class ServiceFactory:
     
     # ====== MEDICAMENTO ======
     @staticmethod
-    def create_medicamento_repository(db: Session) -> MedicamentoRepository:
+    def create_medicamento_repository(db: Session) -> IMedicamentoRepository:
         return MedicamentoRepository(db)
-
+    
     @staticmethod
-    def create_unidad_repository(db: Session) -> UnidadRepository:
+    def create_medicamento_service(med_repo: IMedicamentoRepository) -> IMedicamentoService:
+        return MedicamentoService(med_repo)
+
+    # ====== UNIDAD ======
+    @staticmethod
+    def create_unidad_repository(db: Session) -> IUnidadRepository:
         return UnidadRepository(db)
 
     @staticmethod
-    def create_medicamento_service(med_repo: MedicamentoRepository) -> MedicamentoService:
-        return MedicamentoService(med_repo)
-
-    @staticmethod
-    def create_unidad_service(unidad_repo: UnidadRepository) -> UnidadService:
+    def create_unidad_service(unidad_repo: IUnidadRepository) -> IUnidadService:
         return UnidadService(unidad_repo)
 
-    # ====== NUEVOS: MEDICAMENTO x USUARIO ======
+    # ====== MEDICAMENTO x USUARIO ======
     @staticmethod
-    def create_medicamento_x_usuario_repository(db: Session) -> MedicamentoUsuarioRepository:
+    def create_medicamento_x_usuario_repository(db: Session) -> IMedicamentoUsuarioRepository:
         return MedicamentoUsuarioRepository(db)
 
     @staticmethod
     def create_medicamento_x_usuario_service(
-        med_repo: MedicamentoRepository,
-        unidad_repo: UnidadRepository,
-        medxuser_repo: MedicamentoUsuarioRepository,
-    ) -> MedicamentoUsuarioService:
+        med_repo: IMedicamentoRepository,
+        unidad_repo: IUnidadRepository,
+        medxuser_repo: IMedicamentoUsuarioRepository,
+    ) -> IMedicamentoUsuarioService:
         return MedicamentoUsuarioService(med_repo, unidad_repo, medxuser_repo)
-
-    # ====== MEDICAMENTOS ======
-    
-    @staticmethod
-    def create_medicamento_repository(db):
-        return MedicamentoRepository(db)
-
-    @staticmethod
-    def create_medicamento_service(med_repo):
-        return MedicamentoService(med_repo)
-    
-    # ====== UNIDADES ======
-    
-    @staticmethod
-    def create_unidad_repository(db):
-        return UnidadRepository(db)
-
-    @staticmethod
-    def create_unidad_service(unidad_repo):
-        return UnidadService(unidad_repo)
-
-    # ====== TOMAS ======
-    @staticmethod
-    def create_toma_repository(db: Session) -> TomaRepository:
-        return TomaRepository(db)
-
-    @staticmethod
-    def create_toma_service(toma_repo: TomaRepository) -> TomaService:
-        return TomaService(toma_repo)
