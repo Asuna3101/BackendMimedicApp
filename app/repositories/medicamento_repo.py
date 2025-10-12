@@ -2,10 +2,11 @@
 Repositorio para medicamentos (catálogo global)
 """
 from sqlalchemy.orm import Session
+from app.interfaces.medicamento_repository_interface import IMedicamentoRepository
 from app.models.medicamento import Medicamento
 
 
-class MedicamentoRepository:
+class MedicamentoRepository(IMedicamentoRepository):
     def __init__(self, db: Session):
         self.db = db
 
@@ -21,5 +22,11 @@ class MedicamentoRepository:
             self.db.refresh(med)
         return med
     
-    def get_all(self):
-        return self.db.query(Medicamento).order_by(Medicamento.nombre.asc()).all()
+    def get_all(self, skip: int = 0, limit: int = 100):
+        # return self.db.query(Medicamento).order_by(Medicamento.nombre.asc()).all()
+        return (
+            self.db.query(Medicamento)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )

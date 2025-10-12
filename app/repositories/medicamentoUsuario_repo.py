@@ -14,8 +14,8 @@ class MedicamentoUsuarioRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, data: dict) -> MedicamentoUsuario:
-        medxuser = MedicamentoUsuario(**data)
+    def create(self, medicamentoUsuario_data: dict) -> MedicamentoUsuario:
+        medxuser = MedicamentoUsuario(**medicamentoUsuario_data)
         self.db.add(medxuser)
         self.db.commit()
         self.db.refresh(medxuser)

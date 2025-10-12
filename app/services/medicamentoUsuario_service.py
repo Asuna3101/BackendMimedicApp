@@ -1,18 +1,16 @@
 """
 Servicio para registrar medicamentos asociados a usuarios
 """
-from app.models.medicamento import Medicamento
-from app.models.medicamentoUsuario import MedicamentoUsuario
-from app.models.unidad import Unidad
-from app.repositories.medicamento_repo import MedicamentoRepository
+from app.interfaces.medicamento_usuario_repository_interface import IMedicamentoUsuarioRepository
+from app.interfaces.medicamento_usuario_service_interface import IMedicamentoUsuarioService
 from app.repositories.unidad_repo import UnidadRepository
 from app.repositories.medicamentoUsuario_repo import MedicamentoUsuarioRepository
 
 
-class MedicamentoUsuarioService:
+class MedicamentoUsuarioService(IMedicamentoUsuarioService):
     def __init__(
         self,
-        med_repo: MedicamentoRepository,
+        med_repo: IMedicamentoUsuarioRepository,
         unidad_repo: UnidadRepository,
         medxuser_repo: MedicamentoUsuarioRepository,
     ):
