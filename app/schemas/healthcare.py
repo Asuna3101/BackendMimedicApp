@@ -1,48 +1,50 @@
-from datetime import date, time, datetime
+from datetime import datetime
 from pydantic import BaseModel
+
+# -------------------------- CATÁLOGOS --------------------------
 
 class ClinicOut(BaseModel):
     id: int
     nombre: str
     ciudad: str | None = None
     direccion: str | None = None
-    class Config: from_attributes = True
+
+    class Config:
+        from_attributes = True  # Pydantic v2
 
 class SpecialtyOut(BaseModel):
     id: int
     nombre: str
-    class Config: from_attributes = True
+
+    class Config:
+        from_attributes = True
 
 class DoctorOut(BaseModel):
     id: int
     nombre: str
     clinica_id: int
     especialidad_id: int
-    class Config: from_attributes = True
 
-class SlotOut(BaseModel):
-    hora_inicio: time
-    hora_fin: time
-    disponible: bool
+    class Config:
+        from_attributes = True
 
-class AvailabilityOut(BaseModel):
+
+# -------------------- APPOINTMENT REMINDERS --------------------
+
+class AppointmentReminderCreate(BaseModel):
+    clinic_id: int
+    specialty_id: int
     doctor_id: int
-    fecha: date
-    slots: list[SlotOut]
+    starts_at: datetime          # fecha+hora (ISO 8601)
+    notes: str | None = None
 
-class AppointmentCreate(BaseModel):
-    doctor_id: int
-    fecha: date
-    hora_inicio: time
-    hora_fin: time
-
-class AppointmentOut(BaseModel):
+class AppointmentReminderOut(BaseModel):
     id: int
+    clinic_id: int
+    specialty_id: int
     doctor_id: int
-    paciente_id: int
-    fecha: date
-    hora_inicio: time
-    hora_fin: time
-    estado: str
-    created_at: datetime
-    class Config: from_attributes = True
+    starts_at: datetime
+    notes: str | None = None
+
+    class Config:
+        from_attributes = True

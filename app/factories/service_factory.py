@@ -3,63 +3,69 @@ Factory Pattern para crear servicios y dependencias
 Implementa Dependency Injection (DIP)
 """
 from sqlalchemy.orm import Session
-from app.interfaces.citas_repository_interface import ICitasRepository
-from app.interfaces.citas_service_interface import ICitasService
+
+# --- Usuarios / Auth ---
 from app.interfaces.user_service_interface import IUserService
 from app.interfaces.user_repository_interface import IUserRepository
 from app.interfaces.auth_interface import IPasswordHasher, ITokenGenerator
-from app.repositories.citas_repository import CitasRepository
-from app.services.citas_service import CitasService
-from app.services.user_service import UserService
 from app.repositories.user_repository import UserRepository
+from app.services.user_service import UserService
 from app.auth.password_hasher import BcryptPasswordHasher
 from app.auth.token_generator import JWTTokenGenerator
+
+# --- Appointment Reminders (nuevo flujo) ---
+from app.interfaces.appointment_reminder_repository_interface import (
+    IAppointmentReminderRepository,
+)
+from app.interfaces.appointment_reminder_service_interface import (
+    IAppointmentReminderService,
+)
+from app.repositories.appointment_reminder_repository import (
+    AppointmentReminderRepository,
+)
+from app.services.appointment_reminder_service import AppointmentReminderService
 
 
 class ServiceFactory:
     """Factory para crear servicios con sus dependencias inyectadas"""
-    
+
+    # ---------------- Usuarios / Auth ----------------
     @staticmethod
     def create_user_repository(db: Session) -> IUserRepository:
-        """Crear repositorio de usuarios"""
         return UserRepository(db)
-    
-    @staticmethod
-    def create_citas_repository(db: Session) -> ICitasRepository:
-        """Crear repositorio de citas"""
-        return CitasRepository(db)
-    
-    @staticmethod
-    def create_citas_service(
-            repository: ICitasRepository
-        ) -> ICitasService:
-        """Crear service de citas"""
-        return CitasService(repository)
-    
+
     @staticmethod
     def create_password_hasher() -> IPasswordHasher:
-        """Crear hasher de contraseñas"""
         return BcryptPasswordHasher()
-    
+
+
     @staticmethod
     def create_token_generator() -> ITokenGenerator:
-        """Crear generador de tokens"""
         return JWTTokenGenerator()
-    
+
     @staticmethod
     def create_user_service(
         repository: IUserRepository,
-        password_hasher: IPasswordHasher
+        password_hasher: IPasswordHasher,
     ) -> IUserService:
-        """Crear servicio de usuarios con dependencias inyectadas"""
         return UserService(repository, password_hasher)
-
 
     @staticmethod
     def create_auth_service(
-        user_service: IUserService,
-        token_generator: ITokenGenerator
+        user_repository: IUserRepository,
+        token_generator: ITokenGenerator,
+        password_hasher: IPasswordHasher,
     ):
-        """Crear servicio de autenticación"""
         from app.services.auth_service import AuthService
-        return AuthService(user_service, token_generator)
+        return AuthService(user_repository, token_generator, password_hasher)
+
+    # --------- Appointment Reminders (nuevo) ----------
+    @staticmethod
+    def create_appointment_reminder_repository(db: Session) -> IAppointmentReminderRepository:
+        return AppointmentReminderRepository(db)
+
+    @staticmethod
+    def create_appointment_reminder_service(
+        repository: IAppointmentReminderRepository,
+    ) -> IAppointmentReminderService:
+        return AppointmentReminderService(repository)

@@ -13,5 +13,4 @@ class Doctor(Base):
 
     clinica = relationship("Clinic", back_populates="doctores")
     especialidad = relationship("Specialty")
-    disponibilidades = relationship("DoctorAvailability", back_populates="doctor", cascade="all, delete")
     citas = relationship("Appointment", back_populates="doctor", cascade="all, delete")
