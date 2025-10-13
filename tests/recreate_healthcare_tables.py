@@ -14,8 +14,6 @@ from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 
 from app.core.database import engine
-from app.models.base import Base
-
 from app.models.clinic import Clinic
 from app.models.specialty import Specialty
 from app.models.clinic_specialty import ClinicSpecialty
@@ -114,25 +112,6 @@ def seed_data(db):
                 doctores.append(d)
     db.add_all(doctores)
     db.flush()
-
-    # --- (Opcional) Sembrar 1-2 recordatorios si ya tienes un user_id conocido ---
-    """
-    user_id_demo = 1  # reemplaza por un ID válido ya existente
-    manana = date.today() + timedelta(days=1)
-    starts_dt = datetime(manana.year, manana.month, manana.day, 11, 30)
-
-    db.add(AppointmentReminder(
-        user_id=user_id_demo,
-        clinic_id=clinicas[0].id,
-        specialty_id=esp_map["Cardiología"].id,
-        doctor_id=doctores[0].id,
-        starts_at=starts_dt,
-        notes="Chequeo general"
-    ))
-    db.commit()
-    print("Recordatorio(s) de ejemplo creado(s).")
-    """
-
     db.commit()
     print("Seed de catálogos completado.")
 
