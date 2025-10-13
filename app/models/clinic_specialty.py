@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
-from app.models.base import Base
+from app.core.database import Base
 
 class ClinicSpecialty(Base):
     __tablename__ = "clinic_especialidades"

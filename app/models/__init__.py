@@ -1,11 +1,9 @@
-# app/models/__init__.py
-from .base import Base
+from app.core.database import Base  # el ÚNICO Base
 
-# importa TODOS los modelos que deben existir en metadata:
+# importa todos los modelos para registrarlos en el mapper
 from .user import User
 from .clinic import Clinic
 from .specialty import Specialty
-from .clinic_specialty import ClinicSpecialty
 from .doctor import Doctor
 from .appointment_reminder import AppointmentReminder
-# (NO importes doctor_availability ni appointment legacy si ya los eliminaste)
+

@@ -14,48 +14,23 @@ def get_db():
     finally:
         db.close()
 
-def get_current_user(
-    authorization: str | None = Header(default=None),
-    db: Session = Depends(get_db),
-):
-    """
-    Lee el header Authorization: Bearer <token>, decodifica el JWT
-    y retorna la instancia de User. Lanza 401 si algo falla.
-    """
+def get_current_user(authorization: str | None = Header(default=None),
+                     db: Session = Depends(get_db)) -> User:
     if not authorization or not authorization.lower().startswith("bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No autenticado",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    token = authorization.split(" ")[1]
-
+        raise HTTPException(status_code=401, detail="No autenticado",
+                            headers={"WWW-Authenticate": "Bearer"})
+    token = authorization.split(" ", 1)[1]
     try:
-        payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM],
-        )
-        # según cómo generaste el token; usa 'sub' o 'user_id'
-        user_id = payload.get("sub") or payload.get("user_id")
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token inválido (sin subject)",
-            )
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        sub = payload.get("sub")
+        if sub is None:
+            raise HTTPException(status_code=401, detail="Token inválido (sin subject)")
+        user_id = int(sub)
+    except (JWTError, ValueError):
+        raise HTTPException(status_code=401, detail="Token inválido o expirado",
+                            headers={"WWW-Authenticate": "Bearer"})
 
-    # Cargar usuario
-    user = db.query(User).get(int(user_id))
+    user = db.get(User, user_id)   # en vez de db.query(User).get(...)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Usuario no encontrado",
-        )
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
     return user

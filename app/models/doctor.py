@@ -1,6 +1,7 @@
+# app/models/doctor.py
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from app.models.base import Base
+from app.core.database import Base
 
 class Doctor(Base):
     __tablename__ = "doctores"
@@ -13,4 +14,6 @@ class Doctor(Base):
 
     clinica = relationship("Clinic", back_populates="doctores")
     especialidad = relationship("Specialty")
-    citas = relationship("Appointment", back_populates="doctor", cascade="all, delete")
+
+    # 👇 Debe existir la clase Appointment y su atributo doctor con back_populates="citas"
+    citas = relationship("AppointmentReminder", back_populates="doctor", cascade="all, delete-orphan")

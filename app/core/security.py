@@ -2,27 +2,19 @@
 Utilidades de seguridad simplificadas
 """
 import hashlib
-from datetime import datetime, timedelta
 from typing import Any, Union
 from jose import jwt
-
+from datetime import datetime, timedelta, timezone
 from app.core.config import settings
 
 
-def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
-    """
-    Crear token JWT de acceso
-    """
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
-    
-    to_encode = {"exp": expire, "sub": str(subject)}
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+
+def create_access_token(subject: int | str, expires_delta: timedelta | None = None) -> str:
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    ))
+    to_encode = {"sub": str(subject), "exp": expire}
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

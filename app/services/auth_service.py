@@ -51,7 +51,7 @@ class AuthService:
 
         # SUBJECT = user.id (no correo)
         access_token = self.token_generator.create_access_token(
-            {"sub": str(user.id)},
+            subject=user.id,               # <-- SOLO el id
             expires_delta=expires_delta,
         )
 
@@ -93,10 +93,7 @@ class AuthService:
         return self.user_repo.get_by_id(user_id)
 
     def refresh_token(self, user: User, expires_delta: Optional[timedelta] = None) -> str:
-        """
-        Generar nuevo token para usuario existente
-        """
         return self.token_generator.create_access_token(
-            {"sub": str(user.id)},
+            subject=user.id,           # <-- idem
             expires_delta=expires_delta,
         )
