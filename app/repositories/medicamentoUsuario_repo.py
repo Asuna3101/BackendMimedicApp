@@ -47,3 +47,21 @@ class MedicamentoUsuarioRepository(IMedicamentoUsuarioRepository):
             .order_by(desc(MedicamentoUsuario.createdAt))
             .all()
         )
+
+    def get_by_id(self, id_medxuser: int) -> MedicamentoUsuario | None:
+        return self.db.query(MedicamentoUsuario).filter(MedicamentoUsuario.id == id_medxuser).first()
+
+    def update(self, id_medxuser: int, update_data: dict) -> MedicamentoUsuario | None:
+        """Actualizar campos del registro MedicamentoUsuario"""
+        medxuser = self.get_by_id(id_medxuser)
+        if not medxuser:
+            return None
+
+        for field, value in update_data.items():
+            # Ignorar claves no existentes
+            if hasattr(medxuser, field):
+                setattr(medxuser, field, value)
+
+        self.db.commit()
+        self.db.refresh(medxuser)
+        return medxuser

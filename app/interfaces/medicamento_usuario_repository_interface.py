@@ -23,3 +23,13 @@ class IMedicamentoUsuarioRepository(ABC):
     def get_by_usuario(self, id_usuario: int) -> Optional[List[MedicamentoUsuario]]:
         """Obtener medicamentos por usuario"""
         pass
+
+    @abstractmethod
+    def get_by_id(self, id_medxuser: int) -> Optional[MedicamentoUsuario]:
+        """Obtener un registro medicamento_usuario por su ID"""
+        pass
+
+    @abstractmethod
+    def update(self, id_medxuser: int, update_data: dict) -> Optional[MedicamentoUsuario]:
+        """Actualizar un registro medicamento_usuario"""
+        pass
