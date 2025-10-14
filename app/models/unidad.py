@@ -12,3 +12,4 @@ class Unidad(Base):
     nombre = Column(String(50), nullable=False, unique=True, index=True)
     createdAt = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updatedAt = Column(DateTime(timezone=True), onupdate=func.now())
+    #uwu
