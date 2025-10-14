@@ -73,11 +73,10 @@ class ServiceFactory:
     @staticmethod
     def create_auth_service(
         user_repository: IUserRepository,
-        token_generator: ITokenGenerator,
-        password_hasher: IPasswordHasher,
+        token_generator: ITokenGenerator
     ):
         from app.services.auth_service import AuthService
-        return AuthService(user_repository, token_generator, password_hasher)
+        return AuthService(user_repository, token_generator)
 
     # ====== MEDICAMENTO ======
     @staticmethod

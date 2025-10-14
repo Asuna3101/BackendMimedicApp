@@ -9,3 +9,9 @@ from app.models.medicamento import Medicamento
 from app.models.unidad import Unidad
 from app.models.medicamentoUsuario import MedicamentoUsuario
 from app.models.toma import Toma
+from app.models.clinic import Clinic
+from app.models.specialty import Specialty
+from app.models.doctor import Doctor
+from app.models.clinic_specialty import ClinicSpecialty
+from app.models.appointment_reminder import AppointmentReminder
+

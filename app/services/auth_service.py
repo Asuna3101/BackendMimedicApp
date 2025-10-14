@@ -7,6 +7,7 @@ from typing import Optional
 
 from fastapi import HTTPException, status
 
+from app.interfaces.user_service_interface import IUserService
 from app.models.user import User
 from app.interfaces.user_repository_interface import IUserRepository
 from app.interfaces.auth_interface import ITokenGenerator, IPasswordHasher
@@ -15,15 +16,19 @@ from app.interfaces.auth_interface import ITokenGenerator, IPasswordHasher
 class AuthService:
     """Servicio dedicado a autenticación (verificación y emisión de tokens)"""
 
-    def __init__(
-        self,
-        user_repo: IUserRepository,
-        token_generator: ITokenGenerator,
-        password_hasher: IPasswordHasher,
-    ):
-        self.user_repo = user_repo
+    def __init__(self, user_service: IUserService, token_generator: ITokenGenerator):
+        self.user_service = user_service
         self.token_generator = token_generator
-        self.password_hasher = password_hasher
+    
+    # def __init__(
+    #     self,
+    #     user_repo: IUserRepository,
+    #     token_generator: ITokenGenerator,
+        # password_hasher: IPasswordHasher,
+    # ):
+    #     self.user_repo = user_repo
+    #     self.token_generator = token_generator
+        # self.password_hasher = password_hasher
 
 #     def authenticate_and_create_token(
 #         self,
@@ -55,45 +60,45 @@ class AuthService:
 #             expires_delta=expires_delta,
 #         )
 
-   def authenticate_and_create_token(
-           self,
-           correo: str,
-           password: str,
-           expires_delta: Optional[timedelta] = None
-       ) -> Optional[dict]:
-           """
-           Autentica usuario y genera token
-           Retorna None si las credenciales son inválidas
-           """
-           # Autenticar usuario
-           user = self.user_service.authenticate_user(correo, password)
-           if not user:
-               return None
+    def authenticate_and_create_token(
+        self,
+        correo: str,
+        password: str,
+        expires_delta: Optional[timedelta] = None
+    ) -> Optional[dict]:
+        """
+        Autentica usuario y genera token
+        Retorna None si las credenciales son inválidas
+        """
+        # Autenticar usuario
+        user = self.user_service.authenticate_user(correo, password)
+        if not user:
+            return None
 
-           # Generar token
-           access_token = self.token_generator.create_access_token(
-               subject=user.correo,
-               expires_delta=expires_delta
-           )
+        # Generar token
+        access_token = self.token_generator.create_access_token(
+            subject=user.correo,
+            expires_delta=expires_delta
+        )
 
-           return {
-               "access_token": access_token,
-               "token_type": "bearer",
-               "user": user
-           }
-
-        # Devuelve payload mínimo (no el ORM completo)
         return {
             "access_token": access_token,
             "token_type": "bearer",
-            "user": {
-                "id": user.id,
-                "correo": user.correo,
-                "nombre": user.nombre,
-                "is_active": user.is_active,
-                "is_superuser": user.is_superuser,
-            },
+            "user": user
         }
+
+        # # Devuelve payload mínimo (no el ORM completo)
+        # return {
+        #     "access_token": access_token,
+        #     "token_type": "bearer",
+        #     "user": {
+        #         "id": user.id,
+        #         "correo": user.correo,
+        #         "nombre": user.nombre,
+        #         "is_active": user.is_active,
+        #         "is_superuser": user.is_superuser,
+        #     },
+        # }
 
 #     def verify_token(self, token: str) -> Optional[dict]:
 #         """
@@ -103,14 +108,14 @@ class AuthService:
 #         return payload or None
 
     def verify_token(self, token: str) -> Optional[str]:
-            """
-            Verificar token y extraer username
-            """
-            payload = self.token_generator.decode_token(token)
-            if not payload:
-                return None
+        """
+        Verificar token y extraer username
+        """
+        payload = self.token_generator.decode_token(token)
+        if not payload:
+            return None
 
-            return payload.get("sub")
+        return payload.get("sub")
 
 #     def get_user_from_token(self, token: str) -> Optional[User]:
 #         """

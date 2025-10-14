@@ -6,12 +6,14 @@ from starlette.responses import Response, PlainTextResponse
 
 from app.core.config import settings
 from app.core.database import engine, Base
-import app.models as models
 from app.models import base
 from app.api.v1.endpoints import api_router, auth, medicamentoxusuario, toma, unidad
+from app.seeders.run_seeders import run_all_seeders
 
 
 base.Base.metadata.create_all(bind=engine)
+
+run_all_seeders()
 
 app = FastAPI(
     title="MimedicApp API",

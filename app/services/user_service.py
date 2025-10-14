@@ -21,10 +21,10 @@ class UserService(IUserService):
         """Obtener usuario por correo"""
         return self.repository.get_by_email(email)
     
-    def authenticate_user(self, username_or_email: str, password: str) -> Optional[User]:
+    def authenticate_user(self, email: str, password: str) -> Optional[User]:
         """Autenticar usuario por correo o username"""
         # Buscar por correo (en nuestro caso, username es el correo)
-        user = self.repository.get_by_email(username_or_email)
+        user = self.repository.get_by_email(email)
         
         # Verificar contraseña
         if not user or not self.password_hasher.verify_password(password, user.hashed_password):
