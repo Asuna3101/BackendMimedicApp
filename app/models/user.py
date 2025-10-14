@@ -1,6 +1,4 @@
-"""
-Modelo de Usuario
-"""
+# app/models/user.py
 from sqlalchemy import Boolean, Column, Integer, String, DateTime, Date, Numeric
 from sqlalchemy.sql import func
 

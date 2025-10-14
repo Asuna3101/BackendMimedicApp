@@ -1,5 +1,6 @@
+# app/repositories/appointment_reminder_repository
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models.appointment_reminder import AppointmentReminder
 
 class AppointmentReminderRepository:
@@ -38,10 +39,17 @@ class AppointmentReminderRepository:
         return obj
 
     def list_by_user(self, user_id: int):
-        return (self.db.query(AppointmentReminder)
-                .filter(AppointmentReminder.user_id == user_id)
-                .order_by(AppointmentReminder.starts_at.desc())
-                .all())
+        return (
+            self.db.query(AppointmentReminder)
+            .options(
+                joinedload(AppointmentReminder.clinic),
+                joinedload(AppointmentReminder.specialty),
+                joinedload(AppointmentReminder.doctor),
+            )
+            .filter(AppointmentReminder.user_id == user_id)
+            .order_by(AppointmentReminder.starts_at.desc())
+            .all()
+        )
 
     def get(self, reminder_id: int):
         return self.db.query(AppointmentReminder).get(reminder_id)

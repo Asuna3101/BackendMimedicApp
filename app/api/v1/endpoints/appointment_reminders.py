@@ -19,13 +19,7 @@ def create_appointment_reminder(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    # normaliza a UTC y quita tz si tu columna es 'timestamp without time zone'
-    starts_at = payload.starts_at
-    if starts_at.tzinfo is None:
-        starts_at = starts_at.replace(tzinfo=timezone.utc)
-    else:
-        starts_at = starts_at.astimezone(timezone.utc)
-    starts_at = starts_at.replace(tzinfo=None)
+    starts_at = payload.starts_at  # datetime "naive" (local)
 
     return _svc(db).create(
         user_id=current_user.id,

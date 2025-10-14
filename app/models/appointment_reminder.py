@@ -8,9 +8,9 @@ class AppointmentReminder(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False, index=True)
 
-    clinic_id = Column(Integer, ForeignKey("clinicas.id", ondelete="CASCADE"), nullable=False, index=True)
+    clinic_id    = Column(Integer, ForeignKey("clinicas.id", ondelete="CASCADE"), nullable=False, index=True)
     specialty_id = Column(Integer, ForeignKey("especialidades.id", ondelete="CASCADE"), nullable=False, index=True)
-    doctor_id = Column(Integer, ForeignKey("doctores.id", ondelete="CASCADE"), nullable=False, index=True)
+    doctor_id    = Column(Integer, ForeignKey("doctores.id", ondelete="CASCADE"), nullable=False, index=True)
 
     starts_at = Column(DateTime(timezone=True), nullable=False, index=True)
     notes = Column(String(400), nullable=True)
@@ -19,5 +19,7 @@ class AppointmentReminder(Base):
         UniqueConstraint("user_id", "doctor_id", "starts_at", name="uq_user_doctor_start"),
     )
 
-    # LADO HIJO → apunta al padre Doctor
-    doctor = relationship("Doctor", back_populates="citas")
+    # Relaciones para eager loading en el listado
+    clinic    = relationship("Clinic", lazy="joined")
+    specialty = relationship("Specialty", lazy="joined")
+    doctor    = relationship("Doctor", back_populates="citas", lazy="joined")

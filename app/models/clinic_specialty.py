@@ -1,3 +1,4 @@
+# app/models/clinic_specialty.py
 from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.core.database import Base
