@@ -13,6 +13,26 @@ from app.services.user_service import UserService
 from app.auth.password_hasher import BcryptPasswordHasher
 from app.auth.token_generator import JWTTokenGenerator
 
+
+# --- Medicamentos ---
+from app.interfaces.medicamento_repository_interface import IMedicamentoRepository
+from app.interfaces.medicamento_service_interface import IMedicamentoService
+from app.interfaces.medicamento_usuario_repository_interface import IMedicamentoUsuarioRepository
+from app.interfaces.medicamento_usuario_service_interface import IMedicamentoUsuarioService
+from app.interfaces.toma_repository_interface import ITomaRepository
+from app.interfaces.toma_service_interface import ITomaService
+from app.interfaces.unidad_repository_interface import IUnidadRepository
+from app.interfaces.unidad_service_interface import IUnidadService
+from app.services.medicamentoUsuario_service import MedicamentoUsuarioService
+from app.services.medicamento_service import MedicamentoService
+from app.services.toma_service import TomaService
+from app.services.unidad_service import UnidadService
+from app.repositories.unidad_repo import UnidadRepository
+from app.repositories.medicamentoUsuario_repo import MedicamentoUsuarioRepository
+from app.repositories.toma_repo import TomaRepository
+from app.repositories.medicamento_repo import MedicamentoRepository
+
+
 # --- Appointment Reminders (nuevo flujo) ---
 from app.interfaces.appointment_reminder_repository_interface import (
     IAppointmentReminderRepository,
@@ -58,6 +78,47 @@ class ServiceFactory:
     ):
         from app.services.auth_service import AuthService
         return AuthService(user_repository, token_generator, password_hasher)
+
+    # ====== MEDICAMENTO ======
+    @staticmethod
+    def create_medicamento_repository(db: Session) -> IMedicamentoRepository:
+        return MedicamentoRepository(db)
+
+    @staticmethod
+    def create_medicamento_service(med_repo: IMedicamentoRepository) -> IMedicamentoService:
+        return MedicamentoService(med_repo)
+
+    # ====== UNIDAD ======
+    @staticmethod
+    def create_unidad_repository(db: Session) -> IUnidadRepository:
+        return UnidadRepository(db)
+
+    @staticmethod
+    def create_unidad_service(unidad_repo: IUnidadRepository) -> IUnidadService:
+        return UnidadService(unidad_repo)
+
+    # ====== TOMA ======
+    @staticmethod
+    def create_toma_repository(db: Session) -> ITomaRepository:
+        return TomaRepository(db)
+
+    @staticmethod
+    def create_toma_service(toma_repo: ITomaRepository) -> ITomaService:
+        return TomaService(toma_repo)
+
+
+    # ====== MEDICAMENTO x USUARIO ======
+    @staticmethod
+    def create_medicamento_x_usuario_repository(db: Session) -> IMedicamentoUsuarioRepository:
+        return MedicamentoUsuarioRepository(db)
+
+    @staticmethod
+    def create_medicamento_x_usuario_service(
+        med_repo: IMedicamentoRepository,
+        unidad_repo: IUnidadRepository,
+        medxuser_repo: IMedicamentoUsuarioRepository,
+    ) -> IMedicamentoUsuarioService:
+        return MedicamentoUsuarioService(med_repo, unidad_repo, medxuser_repo)
 
     # --------- Appointment Reminders (nuevo) ----------
     @staticmethod
