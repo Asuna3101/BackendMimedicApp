@@ -1,7 +1,7 @@
 """
 Endpoint para registrar medicamentos 
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
 from app.controllers.medicamento_controller import MedicamentoController
 from app.core.database import get_db
@@ -35,3 +35,44 @@ def listar_mis_medicamentos(
 ):
     controller = MedicamentoUsuarioController(db)
     return controller.obtener_medicamentos_usuario(user.id)
+
+
+@router.put("/usuario/actualizar/{id_medicamento_usuario}")
+def actualizar_medicamento_usuario(
+    id_medicamento_usuario: int,
+    data: MedicamentoUsuarioCreate,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user),
+):
+    """Actualizar un medicamento asociado al usuario autenticado.
+
+    Nota: por simplicidad se reutiliza `MedicamentoUsuarioCreate` como payload;
+    idealmente se debería crear un esquema `MedicamentoUsuarioUpdate` con campos opcionales.
+    """
+    controller = MedicamentoUsuarioController(db)
+    return controller.actualizar_medicamento_usuario(user.id, id_medicamento_usuario, data)
+
+
+@router.delete("/usuario/eliminar/{id_medicamento_usuario}")
+def eliminar_medicamento_usuario(
+    id_medicamento_usuario: int,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user),
+):
+    """Eliminar un medicamento asociado al usuario autenticado."""
+    controller = MedicamentoUsuarioController(db)
+    return controller.eliminar_medicamento_usuario(user.id, id_medicamento_usuario)
+
+
+@router.post("/usuario/eliminar-lista")
+def eliminar_lista_medicamento_usuario(
+    ids: list[int] = Body(..., embed=True),
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user),
+):
+    """Eliminar múltiples medicamentos asociados al usuario autenticado.
+
+    Body esperado: { "ids": [1,2,3] }
+    """
+    controller = MedicamentoUsuarioController(db)
+    return controller.eliminar_lista_medicamento_usuario(user.id, ids)
