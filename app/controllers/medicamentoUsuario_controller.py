@@ -60,3 +60,15 @@ class MedicamentoUsuarioController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al eliminar medicamento de usuario: {str(e)}",
             )
+
+    def eliminar_lista_medicamento_usuario(self, id_usuario: int, ids: list):
+        try:
+            return self.service.eliminar_lista_medicamento_usuario(id_usuario, ids)
+        except ValueError as e:
+            msg = str(e)
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=msg)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error al eliminar lista de medicamentos de usuario: {str(e)}",
+            )

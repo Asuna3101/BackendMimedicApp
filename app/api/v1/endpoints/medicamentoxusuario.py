@@ -1,7 +1,7 @@
 """
 Endpoint para registrar medicamentos 
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
 from app.controllers.medicamento_controller import MedicamentoController
 from app.core.database import get_db
@@ -62,3 +62,17 @@ def eliminar_medicamento_usuario(
     """Eliminar un medicamento asociado al usuario autenticado."""
     controller = MedicamentoUsuarioController(db)
     return controller.eliminar_medicamento_usuario(user.id, id_medicamento_usuario)
+
+
+@router.post("/usuario/eliminar-lista")
+def eliminar_lista_medicamento_usuario(
+    ids: list[int] = Body(..., embed=True),
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user),
+):
+    """Eliminar múltiples medicamentos asociados al usuario autenticado.
+
+    Body esperado: { "ids": [1,2,3] }
+    """
+    controller = MedicamentoUsuarioController(db)
+    return controller.eliminar_lista_medicamento_usuario(user.id, ids)

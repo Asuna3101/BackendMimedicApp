@@ -2,7 +2,7 @@
 Interfaz simplificada de servicio medicamento usuario
 """
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, List
 
 
 class IMedicamentoUsuarioService(ABC):
@@ -42,5 +42,18 @@ class IMedicamentoUsuarioService(ABC):
 
         Returns:
             bool: True si se eliminó correctamente, False si no existía o no pertenece.
+        """
+        pass
+
+    @abstractmethod
+    def eliminar_lista_medicamento_usuario(self, id_usuario: int, ids: List[int]) -> dict:
+        """Eliminar múltiples registros medicamento-usuario por sus IDs.
+
+        Args:
+            id_usuario (int): ID del usuario que solicita la eliminación.
+            ids (List[int]): Lista de IDs de `medicamento_usuario` a eliminar.
+
+        Returns:
+            dict: Resumen con conteo y listas: {deleted_count, deleted_ids, failed_ids}.
         """
         pass

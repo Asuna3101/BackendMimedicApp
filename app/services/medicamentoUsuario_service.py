@@ -111,3 +111,27 @@ class MedicamentoUsuarioService(IMedicamentoUsuarioService):
         if not eliminado:
             raise ValueError("No se pudo eliminar el registro (no existe o no pertenece al usuario)")
         return True
+
+    def eliminar_lista_medicamento_usuario(self, id_usuario: int, ids: list) -> dict:
+        """Eliminar una lista de registros medicamento-usuario por sus IDs.
+
+        Devuelve un resumen con los ids eliminados y los que fallaron.
+        """
+        deleted_ids = []
+        failed_ids = []
+
+        for mid in ids:
+            try:
+                ok = self.medxuser_repo.delete(id_usuario, mid)
+                if ok:
+                    deleted_ids.append(mid)
+                else:
+                    failed_ids.append(mid)
+            except Exception:
+                failed_ids.append(mid)
+
+        return {
+            "deleted_count": len(deleted_ids),
+            "deleted_ids": deleted_ids,
+            "failed_ids": failed_ids,
+        }
