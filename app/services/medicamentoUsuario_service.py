@@ -100,3 +100,14 @@ class MedicamentoUsuarioService(IMedicamentoUsuarioService):
             "id": actualizado.id,
             "message": "Medicamento de usuario actualizado correctamente",
         }
+
+    def eliminar_medicamento_usuario(self, id_usuario: int, id_medicamento_usuario: int) -> bool:
+        """Eliminar un registro medicamento-usuario si pertenece al usuario.
+
+        Llama al repositorio para realizar la eliminación y devuelve True/False.
+        Lanza ValueError si el registro no existe o no pertenece al usuario.
+        """
+        eliminado = self.medxuser_repo.delete(id_usuario, id_medicamento_usuario)
+        if not eliminado:
+            raise ValueError("No se pudo eliminar el registro (no existe o no pertenece al usuario)")
+        return True

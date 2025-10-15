@@ -31,3 +31,16 @@ class IMedicamentoUsuarioService(ABC):
             dict: Representación del medicamento_usuario actualizado o información sobre la operación.
         """
         pass
+
+    @abstractmethod
+    def eliminar_medicamento_usuario(self, id_usuario: int, id_medicamento_usuario: int) -> bool:
+        """Eliminar un registro medicamento-usuario si pertenece al usuario.
+
+        Args:
+            id_usuario (int): ID del usuario que solicita la eliminación.
+            id_medicamento_usuario (int): ID del registro a eliminar.
+
+        Returns:
+            bool: True si se eliminó correctamente, False si no existía o no pertenece.
+        """
+        pass

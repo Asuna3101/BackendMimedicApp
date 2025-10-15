@@ -37,7 +37,7 @@ def listar_mis_medicamentos(
     return controller.obtener_medicamentos_usuario(user.id)
 
 
-@router.patch("/usuario/actualizar/{id_medicamento_usuario}")
+@router.put("/usuario/actualizar/{id_medicamento_usuario}")
 def actualizar_medicamento_usuario(
     id_medicamento_usuario: int,
     data: MedicamentoUsuarioCreate,
@@ -51,3 +51,14 @@ def actualizar_medicamento_usuario(
     """
     controller = MedicamentoUsuarioController(db)
     return controller.actualizar_medicamento_usuario(user.id, id_medicamento_usuario, data)
+
+
+@router.delete("/usuario/eliminar/{id_medicamento_usuario}")
+def eliminar_medicamento_usuario(
+    id_medicamento_usuario: int,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user),
+):
+    """Eliminar un medicamento asociado al usuario autenticado."""
+    controller = MedicamentoUsuarioController(db)
+    return controller.eliminar_medicamento_usuario(user.id, id_medicamento_usuario)

@@ -65,3 +65,24 @@ class MedicamentoUsuarioRepository(IMedicamentoUsuarioRepository):
         self.db.commit()
         self.db.refresh(medxuser)
         return medxuser
+
+    def delete(self, id_usuario: int, id_medxuser: int) -> bool:
+        """Eliminar un registro MedicamentoUsuario y sus tomas si pertenece al usuario.
+
+        Devuelve True si se eliminó correctamente, False si no existe o no pertenece al usuario.
+        """
+        medxuser = self.get_by_id(id_medxuser)
+        if not medxuser:
+            return False
+
+        # Verificar pertenencia
+        if medxuser.idUsuario != id_usuario:
+            return False
+
+        # Eliminar tomas asociadas
+        self.db.query(Toma).filter(Toma.idMedxUser == id_medxuser).delete()
+
+        # Eliminar el registro medxuser
+        self.db.delete(medxuser)
+        self.db.commit()
+        return True

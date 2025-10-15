@@ -47,3 +47,16 @@ class MedicamentoUsuarioController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al actualizar medicamento de usuario: {str(e)}",
             )
+
+    def eliminar_medicamento_usuario(self, id_usuario: int, id_medicamento_usuario: int):
+        try:
+            return self.service.eliminar_medicamento_usuario(id_usuario, id_medicamento_usuario)
+        except ValueError as e:
+            msg = str(e)
+            code = status.HTTP_404_NOT_FOUND if "no pudo" in msg.lower() or "no existe" in msg.lower() else status.HTTP_400_BAD_REQUEST
+            raise HTTPException(status_code=code, detail=msg)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error al eliminar medicamento de usuario: {str(e)}",
+            )
