@@ -124,9 +124,10 @@ def _seed_catalogs(db):
     print("✅ Seed de catálogos de salud completado.")
 
 
-def recreate_and_seed_healthcare():
-    """Borra SOLO tablas de salud, recrea y carga seed de catálogos."""
-    _drop_healthcare_tables()
+def seed_healthcare(drop: bool = False):
+    """Crea (y opcionalmente dropea) tablas de salud y carga catálogos."""
+    if drop:
+        _drop_healthcare_tables()
     _create_all_models()
     db = SessionLocal()
     try:
@@ -136,4 +137,4 @@ def recreate_and_seed_healthcare():
 
 
 if __name__ == "__main__":
-    recreate_and_seed_healthcare()
+    seed_healthcare()
