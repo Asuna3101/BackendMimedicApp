@@ -12,8 +12,7 @@ from app.models import doctor as mdoc
 
 from app.schemas.healthcare import ClinicOut, SpecialtyOut, DoctorOut
 
-router = APIRouter(prefix="/health", tags=["healthcare"])
-
+router = APIRouter()
 
 @router.get("/clinicas", response_model=list[ClinicOut])
 def list_clinics(db: Session = Depends(get_db)):

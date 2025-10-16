@@ -12,8 +12,7 @@ from app.services.auth_service import AuthService
 
 from app.schemas.user import Token, UserLogin, UserCreate
 
-router = APIRouter(prefix="/auth", tags=["auth"])
-
+router = APIRouter()
 
 @router.post("/login", response_model=Token)
 def login(

@@ -1,66 +1,51 @@
-# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
 from app.core.config import settings
-from app.core.database import engine, Base
+from app.api.v1.endpoints import auth, medicamentoxusuario, toma, unidad, healthcare, appointment_reminders
+from app.core.database import engine
 from app.models import base
-from app.api.v1.endpoints import api_router
-from app.seeders.run_seeders import run_all_seeders
 
 base.Base.metadata.create_all(bind=engine)
-run_all_seeders()
 
 app = FastAPI(
-    title="MimedicApp API",
+    title="MimedicApp Login API",
     version=settings.PROJECT_VERSION,
-    description="API de autenticación y agenda médica",
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    description="API simplificada solo para login/autenticación",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
-# CORS
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+)(:\d+)?$",
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=600,
 )
 
-# Preflight con PNA
-class PreflightPNAMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        if request.method == "OPTIONS":
-            origin = request.headers.get("origin", "*")
-            req_headers = request.headers.get("access-control-request-headers", "*")
-            req_method  = request.headers.get("access-control-request-method", "*")
-            headers = {
-                "Access-Control-Allow-Origin": origin,
-                "Vary": "Origin",
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Allow-Methods": req_method or "*",
-                "Access-Control-Allow-Headers": req_headers or "*",
-                "Access-Control-Allow-Private-Network": "true",
-                "Access-Control-Max-Age": "600",
-            }
-            return Response(status_code=204, headers=headers)
-        return await call_next(request)
-
-app.add_middleware(PreflightPNAMiddleware)
-app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["authentication"])
+app.include_router(medicamentoxusuario.router,prefix=f"{settings.API_V1_STR}/medicamentos",tags=["medicamentos-usuario"],)
+app.include_router(unidad.router,prefix=f"{settings.API_V1_STR}/unidades",tags=["catalogo-unidades"])
+app.include_router(toma.router,prefix=f"{settings.API_V1_STR}/tomas",tags=["tomas"],)
+app.include_router(healthcare.router,prefix=f"{settings.API_V1_STR}/health",tags=["healthcare"],)
+app.include_router(appointment_reminders.router,prefix=f"{settings.API_V1_STR}/health/appointment-reminders",tags=["citas"],)
 
 @app.get("/")
-def root():
+def read_root():
+    """Endpoint raíz"""
     return {
-        "message": "MimedicApp API",
+        "message": "MimedicApp Login API",
         "version": settings.PROJECT_VERSION,
+        "description": "API simplificada solo para login",
         "docs": "/docs",
-        "login_endpoint": f"{settings.API_V1_STR}/auth/login",
+        "login_endpoint": f"{settings.API_V1_STR}/auth/login"
     }
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "service": "api", "version": settings.PROJECT_VERSION}
+    """Endpoint de health check"""
+    return {
+        "status": "healthy", 
+        "service": "login-only",
+        "version": settings.PROJECT_VERSION
+    }

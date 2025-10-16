@@ -33,18 +33,9 @@ from app.repositories.unidad_repo import UnidadRepository
 from app.repositories.medicamentoUsuario_repo import MedicamentoUsuarioRepository
 from app.repositories.toma_repo import TomaRepository
 from app.repositories.medicamento_repo import MedicamentoRepository
-
-
-# --- Appointment Reminders (nuevo flujo) ---
-from app.interfaces.appointment_reminder_repository_interface import (
-    IAppointmentReminderRepository,
-)
-from app.interfaces.appointment_reminder_service_interface import (
-    IAppointmentReminderService,
-)
-from app.repositories.appointment_reminder_repo import (
-    AppointmentReminderRepository,
-)
+from app.interfaces.appointment_reminder_repository_interface import IAppointmentReminderRepository
+from app.interfaces.appointment_reminder_service_interface import IAppointmentReminderService
+from app.repositories.appointment_reminder_repo import AppointmentReminderRepository
 from app.services.appointment_reminder_service import AppointmentReminderService
 
 
