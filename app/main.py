@@ -4,8 +4,10 @@ from app.core.config import settings
 from app.api.v1.endpoints import auth, medicamentoxusuario, toma, unidad, healthcare, appointment_reminders
 from app.core.database import engine
 from app.models import base
+from app.seeders.run_seeders import run_all_seeders
 
 base.Base.metadata.create_all(bind=engine)
+run_all_seeders()
 
 app = FastAPI(
     title="MimedicApp Login API",
