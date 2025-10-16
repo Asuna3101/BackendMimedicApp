@@ -5,7 +5,7 @@ from app.repositories.appointment_reminder_repo import AppointmentReminderReposi
 WINDOW = timedelta(minutes=15)
 
 def _naive(dt: datetime) -> datetime:
-    # Quita tz si viene aware; si ya es naive, lo deja igual
+
     return dt.replace(tzinfo=None) if (dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None) else dt
 
 class AppointmentReminderService:
