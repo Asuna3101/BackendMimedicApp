@@ -1,9 +1,9 @@
 # app/seeders/seed_healthcare.py
 """
 Recrea catálogos de Salud (clínicas, especialidades, relación y doctores)
-y carga datos de ejemplo. SOLO para dev. Borra tablas de salud si existen.
+y garantiza columnas requeridas en appointment_reminders (p.ej. status).
+SOLO para dev.
 """
-
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 
@@ -20,8 +20,9 @@ Base = models_base.Base
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-# ----------------------------- DDL -----------------------------
+# ----------------------------- DDL helpers -----------------------------
 def _drop_healthcare_tables():
+    """BORRA tablas de salud (solo si drop=True)"""
     with engine.connect() as conn:
         conn.execute(text("DROP TABLE IF EXISTS appointment_reminders CASCADE"))
         conn.execute(text("DROP TABLE IF EXISTS citas CASCADE"))
@@ -35,8 +36,39 @@ def _drop_healthcare_tables():
 
 
 def _create_all_models():
+    """Crea tablas según modelos (NO agrega columnas nuevas en tablas existentes)."""
     Base.metadata.create_all(bind=engine)
     print("🏗️ Tablas creadas (según modelos).")
+
+
+def _ensure_appt_status_column_and_indexes():
+    """
+    Asegura que appointment_reminders tenga la columna 'status' y los índices requeridos.
+    - status: VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+    - índice compuesto (user_id, status, starts_at)
+    """
+    with engine.connect() as conn:
+        # 1) Columna status (idempotente)
+        conn.execute(text("""
+            ALTER TABLE appointment_reminders
+            ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+        """))
+
+        # 2) Backfill por si existieran filas con NULL (por esquemas previos raros)
+        conn.execute(text("""
+            UPDATE appointment_reminders
+            SET status = 'PENDIENTE'
+            WHERE status IS NULL
+        """))
+
+        # 3) Índice útil para /upcoming (idempotente en PG 9.5+)
+        conn.execute(text("""
+            CREATE INDEX IF NOT EXISTS ix_appt_user_status_starts_at
+            ON appointment_reminders (user_id, status, starts_at)
+        """))
+
+        conn.commit()
+    print("🧩 appointment_reminders.status asegurada + índices creados.")
 
 
 # ----------------------------- SEED -----------------------------
@@ -124,17 +156,63 @@ def _seed_catalogs(db):
     print("✅ Seed de catálogos de salud completado.")
 
 
-def seed_healthcare(drop: bool = False):
-    """Crea (y opcionalmente dropea) tablas de salud y carga catálogos."""
+def _seed_example_appointments(db):
+    """
+    (Opcional) Citas de ejemplo para probar /upcoming.
+    Ajusta el user_id a uno válido en tu BD.
+    """
+    from datetime import datetime, timedelta
+    user_id = 2  # <-- cámbialo por el usuario que uses en tus pruebas
+
+    # Busca un doctor cualquiera
+    doc = db.query(Doctor).first()
+    if not doc:
+        print("⚠️ No hay doctores para crear cita de ejemplo.")
+        return
+
+    starts_at_soon = datetime.now().replace(second=0, microsecond=0) + timedelta(minutes=20)
+    starts_at_later = datetime.now().replace(second=0, microsecond=0) + timedelta(hours=2)
+
+    # Inserta directo por SQL para no depender de servicios
+    db.execute(text("""
+        INSERT INTO appointment_reminders (user_id, clinic_id, specialty_id, doctor_id, starts_at, notes, status)
+        VALUES (:user_id, :clinic_id, :specialty_id, :doctor_id, :starts_at, :notes, :status)
+    """), dict(
+        user_id=user_id, clinic_id=doc.clinica_id, specialty_id=doc.especialidad_id,
+        doctor_id=doc.id, starts_at=starts_at_soon, notes='Cita de prueba (20m)',
+        status='PENDIENTE'
+    ))
+    db.execute(text("""
+        INSERT INTO appointment_reminders (user_id, clinic_id, specialty_id, doctor_id, starts_at, notes, status)
+        VALUES (:user_id, :clinic_id, :specialty_id, :doctor_id, :starts_at, :notes, :status)
+    """), dict(
+        user_id=user_id, clinic_id=doc.clinica_id, specialty_id=doc.especialidad_id,
+        doctor_id=doc.id, starts_at=starts_at_later, notes='Cita más tarde',
+        status='PENDIENTE'
+    ))
+    db.commit()
+    print("🧪 Citas de ejemplo insertadas.")
+
+
+def seed_healthcare(drop: bool = False, seed_examples: bool = False):
+    """
+    Crea (y opcionalmente dropea) tablas de salud y carga catálogos;
+    además garantiza columna/índices de appointment_reminders.
+    """
     if drop:
         _drop_healthcare_tables()
     _create_all_models()
+    _ensure_appt_status_column_and_indexes()
+
     db = SessionLocal()
     try:
         _seed_catalogs(db)
+        if seed_examples:
+            _seed_example_appointments(db)
     finally:
         db.close()
 
 
 if __name__ == "__main__":
-    seed_healthcare()
+    # Cambia flags a voluntad en local:
+    seed_healthcare(drop=False, seed_examples=False)

@@ -1,3 +1,5 @@
+# app/factories/service_factory.py
+
 """
 Factory Pattern para crear servicios y dependencias
 Implementa Dependency Injection (DIP)
@@ -40,7 +42,7 @@ from app.interfaces.appointment_reminder_repository_interface import (
 from app.interfaces.appointment_reminder_service_interface import (
     IAppointmentReminderService,
 )
-from app.repositories.appointment_reminder_repository import (
+from app.repositories.appointment_reminder_repo import (
     AppointmentReminderRepository,
 )
 from app.services.appointment_reminder_service import AppointmentReminderService
@@ -125,7 +127,5 @@ class ServiceFactory:
         return AppointmentReminderRepository(db)
 
     @staticmethod
-    def create_appointment_reminder_service(
-        repository: IAppointmentReminderRepository,
-    ) -> IAppointmentReminderService:
-        return AppointmentReminderService(repository)
+    def create_appointment_reminder_service(db: Session) -> IAppointmentReminderService:
+        return AppointmentReminderService(db)
