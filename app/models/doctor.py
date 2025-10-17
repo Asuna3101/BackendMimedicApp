@@ -15,5 +15,5 @@ class Doctor(Base):
     clinica = relationship("Clinic", back_populates="doctores")
     especialidad = relationship("Specialty")
 
-    # 👇 Debe existir la clase Appointment y su atributo doctor con back_populates="citas"
+    # Debe existir la clase Appointment y su atributo doctor con back_populates="citas"
     citas = relationship("AppointmentReminder", back_populates="doctor", cascade="all, delete-orphan")

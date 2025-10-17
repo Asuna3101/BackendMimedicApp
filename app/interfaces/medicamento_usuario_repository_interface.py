@@ -37,12 +37,5 @@ class IMedicamentoUsuarioRepository(ABC):
     @abstractmethod
     def delete(self, id_usuario: int, id_medxuser: int) -> bool:
         """Eliminar un registro medicamento_usuario si pertenece al usuario.
-
-        Args:
-            id_usuario (int): ID del usuario propietario.
-            id_medxuser (int): ID del registro medicamento_usuario a eliminar.
-
-        Returns:
-            bool: True si se eliminó, False si no existía o no pertenece.
         """
         pass

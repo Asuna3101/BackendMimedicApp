@@ -17,10 +17,10 @@ def seed_medicamentos():
         existe = db.query(Medicamento).filter(Medicamento.nombre == nombre).first()
         if not existe:
             db.add(Medicamento(nombre=nombre))
-            print(f"✅ Insertado medicamento: {nombre}")
+            print(f"Insertado medicamento: {nombre}")
     db.commit()
     db.close()
-    print("💊 Seed de medicamentos completado.")
+    print("Seed de medicamentos completado.")
 
 if __name__ == "__main__":
     seed_medicamentos()
