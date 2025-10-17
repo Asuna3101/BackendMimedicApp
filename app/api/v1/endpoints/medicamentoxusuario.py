@@ -22,7 +22,6 @@ def listar_medicamentos(db: Session = Depends(get_db)):
 def registrar_medicamento_usuario(
     data: MedicamentoUsuarioCreate,
     db: Session = Depends(get_db),
-    # ⚠️ En producción, obtén el id_usuario desde el JWT
     user=Depends(get_current_user), 
 ):
     controller = MedicamentoUsuarioController(db)
@@ -31,7 +30,7 @@ def registrar_medicamento_usuario(
 @router.get("/usuario/lista")
 def listar_mis_medicamentos(
     db: Session = Depends(get_db),
-    user = Depends(get_current_user)  # ✅ obtiene el usuario desde el token
+    user = Depends(get_current_user) 
 ):
     controller = MedicamentoUsuarioController(db)
     return controller.obtener_medicamentos_usuario(user.id)
@@ -45,9 +44,6 @@ def actualizar_medicamento_usuario(
     user = Depends(get_current_user),
 ):
     """Actualizar un medicamento asociado al usuario autenticado.
-
-    Nota: por simplicidad se reutiliza `MedicamentoUsuarioCreate` como payload;
-    idealmente se debería crear un esquema `MedicamentoUsuarioUpdate` con campos opcionales.
     """
     controller = MedicamentoUsuarioController(db)
     return controller.actualizar_medicamento_usuario(user.id, id_medicamento_usuario, data)
@@ -71,8 +67,6 @@ def eliminar_lista_medicamento_usuario(
     user = Depends(get_current_user),
 ):
     """Eliminar múltiples medicamentos asociados al usuario autenticado.
-
-    Body esperado: { "ids": [1,2,3] }
     """
     controller = MedicamentoUsuarioController(db)
     return controller.eliminar_lista_medicamento_usuario(user.id, ids)

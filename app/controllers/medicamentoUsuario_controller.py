@@ -38,7 +38,6 @@ class MedicamentoUsuarioController:
         try:
             return self.service.actualizar_medicamento_usuario(id_usuario, id_medicamento_usuario, data)
         except ValueError as e:
-            # Usar 404 o 400 según el mensaje
             msg = str(e)
             code = status.HTTP_404_NOT_FOUND if "no encontrado" in msg.lower() else status.HTTP_400_BAD_REQUEST
             raise HTTPException(status_code=code, detail=msg)
