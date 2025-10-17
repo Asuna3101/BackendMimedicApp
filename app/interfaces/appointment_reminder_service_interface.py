@@ -1,4 +1,3 @@
-# app/interfaces/appointment_reminder_service_interface.py
 from abc import ABC, abstractmethod
 from typing import List
 from datetime import datetime
@@ -11,7 +10,15 @@ class IAppointmentReminderService(ABC):
         pass
 
     @abstractmethod
-    def list_by_user(self, *, user_id: int) -> List[AppointmentReminder]:
+    def list_upcoming(self, *, user_id: int, now: datetime) -> List[AppointmentReminder]:
+        pass
+
+    @abstractmethod
+    def list_overdue(self, *, user_id: int, now: datetime) -> List[AppointmentReminder]:
+        pass
+
+    @abstractmethod
+    def set_status(self, *, user_id: int, reminder_id: int, status: str) -> AppointmentReminder:
         pass
 
     @abstractmethod

@@ -1,40 +1,46 @@
 from datetime import datetime
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.services.appointment_reminder_service import AppointmentReminderService
+
+from app.factories.service_factory import ServiceFactory
 from app.schemas.healthcare import AppointmentReminderCreate
 
 class AppointmentReminderController:
-
     def __init__(self, db: Session):
-        self.svc = AppointmentReminderService(db)
+        repo = ServiceFactory.create_appointment_reminder_repository(db)
+        self.svc = ServiceFactory.create_appointment_reminder_service(repo)
 
-    # Crear
     def create(self, user_id: int, data: AppointmentReminderCreate):
-        return self.svc.create(
-            user_id=user_id,
-            clinic_id=data.clinic_id,
-            specialty_id=data.specialty_id,
-            doctor_id=data.doctor_id,
-            starts_at=data.starts_at,  # local (sin tz), consistente con tu modelo
-            notes=data.notes,
-        )
+        try:
+            return self.svc.create(
+                user_id=user_id,
+                clinic_id=data.clinic_id,
+                specialty_id=data.specialty_id,
+                doctor_id=data.doctor_id,
+                starts_at=data.starts_at,  # local (sin tz)
+                notes=data.notes,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error al crear cita: {e}")
 
-    # Próximas
     def list_upcoming(self, user_id: int, now: datetime):
         return self.svc.list_upcoming(user_id=user_id, now=now)
 
-    # Historial
-    def list_history(self, user_id: int, now: datetime):
-        return self.svc.list_history(user_id=user_id, now=now)
+    def list_overdue(self, user_id: int, now: datetime):
+        return self.svc.list_overdue(user_id=user_id, now=now)
 
-    # Todas por usuario (si quieres mantenerlo)
-    def list_by_user(self, user_id: int):
-        return self.svc.list_by_user(user_id=user_id)
-
-    # Cambiar estado
     def set_status(self, user_id: int, reminder_id: int, status: str):
-        return self.svc.set_status(user_id=user_id, reminder_id=reminder_id, status=status)
+        try:
+            self.svc.set_status(user_id=user_id, reminder_id=reminder_id, status=status)
+        except ValueError as e:
+            msg = str(e).lower()
+            code = status.HTTP_404_NOT_FOUND if "no encontrado" in msg else status.HTTP_400_BAD_REQUEST
+            raise HTTPException(status_code=code, detail=str(e))
 
-    # Eliminar
     def delete(self, user_id: int, reminder_id: int):
-        return self.svc.delete(user_id=user_id, reminder_id=reminder_id)
+        try:
+            self.svc.delete(user_id=user_id, reminder_id=reminder_id)
+        except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

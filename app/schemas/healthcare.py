@@ -1,9 +1,8 @@
-# app/schemas/healthcare.py
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import Literal
 
-# -------- Slims --------
+# ---- Slims ----
 class ClinicOut(BaseModel):
     id: int
     nombre: str
@@ -19,7 +18,7 @@ class DoctorOut(BaseModel):
     nombre: str
     model_config = ConfigDict(from_attributes=True)
 
-# -------- Citas --------
+# ---- Citas ----
 class AppointmentReminderCreate(BaseModel):
     clinic_id: int
     specialty_id: int
@@ -37,7 +36,6 @@ class AppointmentReminderOut(BaseModel):
     clinic: ClinicOut
     specialty: SpecialtyOut
     doctor: DoctorOut
-    # Preparado para la lógica de "faltan 30 min"
     is_due_soon: bool = False
     model_config = ConfigDict(from_attributes=True)
 

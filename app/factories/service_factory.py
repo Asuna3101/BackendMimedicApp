@@ -112,11 +112,11 @@ class ServiceFactory:
     ) -> IMedicamentoUsuarioService:
         return MedicamentoUsuarioService(med_repo, unidad_repo, medxuser_repo)
 
-    # --------- Appointment Reminders (nuevo) ----------
+    # --------- Appointment Reminders ----------
     @staticmethod
     def create_appointment_reminder_repository(db: Session) -> IAppointmentReminderRepository:
         return AppointmentReminderRepository(db)
 
     @staticmethod
-    def create_appointment_reminder_service(db: Session) -> IAppointmentReminderService:
-        return AppointmentReminderService(db)
+    def create_appointment_reminder_service(repo: IAppointmentReminderRepository) -> IAppointmentReminderService:
+        return AppointmentReminderService(repo)

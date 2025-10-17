@@ -28,20 +28,13 @@ def list_upcoming(
     now = datetime.now()
     return _ctl(db).list_upcoming(current_user.id, now)
 
-@router.get("/history", response_model=list[AppointmentReminderOut])
-def list_history(
+@router.get("/overdue", response_model=list[AppointmentReminderOut])
+def list_overdue(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
     now = datetime.now()
-    return _ctl(db).list_history(current_user.id, now)
-
-@router.get("", response_model=list[AppointmentReminderOut])
-def list_my_appointment_reminders(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-):
-    return _ctl(db).list_by_user(current_user.id)
+    return _ctl(db).list_overdue(current_user.id, now)
 
 @router.patch("/{reminder_id}/status", status_code=status.HTTP_204_NO_CONTENT)
 def set_status(
