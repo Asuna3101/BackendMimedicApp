@@ -24,3 +24,17 @@ class TomaController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al actualizar toma: {str(e)}",
             )
+
+    def postpone_tomas(self, toma_id: int, minutes: int):
+        try:
+            return self.service.postpone_tomas(toma_id, minutes)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=str(e),
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error al posponer tomas: {str(e)}",
+            )

@@ -20,3 +20,11 @@ class TomaService(ITomaService):
             self.toma_repo.delete_all_by_medxuser(toma.idMedxUser)
 
         return toma
+
+    def postpone_tomas(self, toma_id: int, minutes: int) -> int:
+        """Postpone la toma y las siguientes del mismo medicamento-usuario.
+        Retorna el número de tomas actualizadas."""
+        updated = self.toma_repo.postpone_from(toma_id, minutes)
+        if updated == 0:
+            raise ValueError("Toma no encontrada o no hay tomas a posponer")
+        return updated
