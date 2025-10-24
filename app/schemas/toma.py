@@ -16,3 +16,16 @@ class TomaResponse(BaseModel):
     adquired: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TomaWithMedicationResponse(BaseModel):
+    id: int
+    idMedxUser: int
+    tomado: bool
+    adquired: datetime
+
+    medicamentoNombre: str
+    dosis: float
+    unidad: str
+
+    model_config = ConfigDict(from_attributes=True)

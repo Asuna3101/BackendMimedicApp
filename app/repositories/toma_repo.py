@@ -70,8 +70,10 @@ class TomaRepository(ITomaRepository):
     def get_pending_at(self, at_datetime) -> list[Toma]:
         """Return tomas scheduled within the minute starting at `at_datetime`
         (inclusive) where tomado is False."""
-        start = at_datetime
-        end = at_datetime + timedelta(minutes=1)
+        # Normalize to the minute window: floor seconds and microseconds so
+        # we search for tomas scheduled in the same minute as `at_datetime`.
+        start = at_datetime.replace(second=0, microsecond=0)
+        end = start + timedelta(minutes=1)
         return (
             self.db.query(Toma)
             .filter(Toma.adquired >= start, Toma.adquired < end, Toma.tomado.is_(False))

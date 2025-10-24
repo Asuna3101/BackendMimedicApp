@@ -5,9 +5,14 @@ from fastapi import APIRouter, Depends, Path, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.controllers.toma_controller import TomaController
-from app.schemas.toma import TomaUpdate, TomaResponse
+from app.schemas.toma import TomaUpdate, TomaResponse, TomaWithMedicationResponse
 from datetime import datetime, timezone
 from typing import List
+
+# Models used to enrich response
+from app.models.medicamentoUsuario import MedicamentoUsuario
+from app.models.medicamento import Medicamento
+from app.models.unidad import Unidad
 
 router = APIRouter()
 
@@ -40,7 +45,7 @@ def postpone_toma(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.get("/pending", response_model=List[TomaResponse])
+@router.get("/pending", response_model=List[TomaWithMedicationResponse])
 def get_pending_tomas(
     at: str | None = Query(None, description="ISO datetime to check (UTC). If omitted uses now UTC"),
     db: Session = Depends(get_db),
@@ -50,7 +55,11 @@ def get_pending_tomas(
     controller = TomaController(db)
     try:
         if at:
-            dt = datetime.fromisoformat(at)
+            # Support ISO strings with trailing 'Z' (Zulu) by converting to +00:00
+            txt = at
+            if txt.endswith('Z'):
+                txt = txt[:-1] + '+00:00'
+            dt = datetime.fromisoformat(txt)
             # ensure timezone-aware UTC
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
@@ -59,10 +68,36 @@ def get_pending_tomas(
         else:
             dt = datetime.now(timezone.utc)
 
-        # use repository via service factory to get pending (we'll call repo directly)
+        # use repository to get pending tomas
         repo = controller.service.toma_repo
         tomas = repo.get_pending_at(dt)
-        return tomas
+
+        # Enrich each toma with medicamento info via medicamento_usuario -> medicamento -> unidad
+        result = []
+        for t in tomas:
+            medx = db.query(MedicamentoUsuario).filter(MedicamentoUsuario.id == t.idMedxUser).first()
+            if medx:
+                med = db.query(Medicamento).filter(Medicamento.id == medx.idMedicamento).first()
+                uni = db.query(Unidad).filter(Unidad.id == medx.idUnidad).first()
+                nombre = med.nombre if med else ""
+                dosis = float(medx.dosis) if medx.dosis is not None else 0.0
+                unidad = uni.nombre if uni else ""
+            else:
+                nombre = ""
+                dosis = 0.0
+                unidad = ""
+
+            result.append({
+                "id": t.id,
+                "idMedxUser": t.idMedxUser,
+                "tomado": t.tomado,
+                "adquired": t.adquired,
+                "medicamentoNombre": nombre,
+                "dosis": dosis,
+                "unidad": unidad,
+            })
+
+        return result
     except HTTPException:
         raise
     except Exception as e:
