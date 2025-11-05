@@ -14,4 +14,6 @@ from app.models.specialty import Specialty
 from app.models.doctor import Doctor
 from app.models.clinic_specialty import ClinicSpecialty
 from app.models.appointment_reminder import AppointmentReminder
+from app.models.ejercicio import Ejercicio
+from app.models.ejercicioUsuario import EjercicioUsuario
 
