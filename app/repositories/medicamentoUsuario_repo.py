@@ -25,8 +25,25 @@ class MedicamentoUsuarioRepository(IMedicamentoUsuarioRepository):
 
     def generate_tomas(self, medxuser: MedicamentoUsuario):
         """Genera tomas cada 'frecuencia_horas' entre [fecha_inicio, fecha_fin]."""
+        # Basic defensive checks + debug logs to help diagnose missing tomas
+        try:
+            frecuencia = float(medxuser.frecuencia_horas)
+        except Exception:
+            frecuencia = 0
+
+        # Debug: print metadata
+        # ignore: avoid_print
+        print(f"[MEDXUSER] Generando tomas for medxuser_id={medxuser.id} start={medxuser.fecha_inicio} end={medxuser.fecha_fin} frecuencia_horas={medxuser.frecuencia_horas}")
+
+        if frecuencia <= 0:
+            # nothing to generate
+            # ignore: avoid_print
+            print(f"[MEDXUSER] frecuencia_horas invalida ({medxuser.frecuencia_horas}), no se generan tomas")
+            return
+
         fecha_actual = medxuser.fecha_inicio
-        delta = timedelta(hours=medxuser.frecuencia_horas)
+        delta = timedelta(hours=frecuencia)
+        created = 0
 
         while fecha_actual <= medxuser.fecha_fin:
             toma = Toma(
@@ -35,9 +52,12 @@ class MedicamentoUsuarioRepository(IMedicamentoUsuarioRepository):
                 adquired=fecha_actual
             )
             self.db.add(toma)
+            created += 1
             fecha_actual += delta
 
         self.db.commit()
+        # ignore: avoid_print
+        print(f"[MEDXUSER] Tomás creadas: {created} para medxuser_id={medxuser.id}")
     def get_by_usuario(self, id_usuario: int):
         return (
             self.db.query(MedicamentoUsuario, Medicamento, Unidad)

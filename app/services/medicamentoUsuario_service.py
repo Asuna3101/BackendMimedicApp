@@ -23,6 +23,24 @@ class MedicamentoUsuarioService(IMedicamentoUsuarioService):
         medicamento = self.med_repo.get_or_create_medicamento(data.nombre)
         unidad = self.unidad_repo.get_or_create_unidad(data.unidad)
 
+        # Basic validation: fecha_fin must be >= fecha_inicio and frecuencia > 0
+        try:
+            fecha_inicio = data.fecha_inicio
+            fecha_fin = data.fecha_fin
+        except Exception:
+            raise ValueError("Fechas inválidas")
+
+        if fecha_fin < fecha_inicio:
+            raise ValueError("fecha_fin debe ser posterior o igual a fecha_inicio")
+
+        try:
+            frecuencia = float(data.frecuencia_horas)
+        except Exception:
+            frecuencia = 0
+
+        if frecuencia <= 0:
+            raise ValueError("frecuencia_horas debe ser un número mayor que 0")
+
         # 2) Asociación user-medicamento
         medxuser_data = {
             "idUsuario": id_usuario,

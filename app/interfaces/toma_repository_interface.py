@@ -20,6 +20,20 @@ class ITomaRepository(ABC):
         pass
 
     @abstractmethod
+    def postpone_from(self, toma_id: int, minutes: int) -> int:
+        """Aumenta en `minutes` el campo adquired de la toma indicada y de
+        todas las tomas siguientes del mismo medicamento-usuario. Devuelve el
+        número de tomas actualizadas."""
+        pass
+
+    @abstractmethod
+    def get_pending_at(self, at_datetime) -> list["Toma"]:
+        """Obtiene la lista de tomas pendientes (tomado == False) cuya fecha
+        programada (`adquired`) cae dentro del minuto indicado por
+        `at_datetime`."""
+        pass
+
+    @abstractmethod
     def count_pendientes_by_medxuser(self, medxuser_id: int) -> int:
         """Contar tomas pendientes por medicamento-usuario"""
         pass
