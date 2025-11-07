@@ -7,10 +7,13 @@ Implementa Dependency Injection (DIP)
 from sqlalchemy.orm import Session
 
 # --- Usuarios / Auth ---
+from app.interfaces.ejercicio_repository_interface import IEjercicioRepository
+from app.interfaces.ejercicio_service_interface import IEjercicioService
 from app.interfaces.user_service_interface import IUserService
 from app.interfaces.user_repository_interface import IUserRepository
 from app.interfaces.auth_interface import IPasswordHasher, ITokenGenerator
 from app.repositories.user_repository import UserRepository
+from app.services.ejercicio_service import EjercicioService
 from app.services.user_service import UserService
 from app.auth.password_hasher import BcryptPasswordHasher
 from app.auth.token_generator import JWTTokenGenerator
@@ -120,3 +123,13 @@ class ServiceFactory:
     @staticmethod
     def create_appointment_reminder_service(db: Session) -> IAppointmentReminderService:
         return AppointmentReminderService(db)
+    
+    # ====== EJERCICIO ======
+    @staticmethod
+    def create_ejercicio_repository(db: Session) -> IEjercicioRepository:
+        from app.repositories.ejercicio_repository import EjercicioRepository
+        return EjercicioRepository(db)
+
+    @staticmethod
+    def create_ejercicio_service(ejercicio_repo: IEjercicioRepository) -> IEjercicioService:
+        return EjercicioService(ejercicio_repo)
