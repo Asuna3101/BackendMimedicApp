@@ -37,11 +37,23 @@ class AppointmentReminderService:
         # Por consistencia, pasa naive al repo también
         return self.repo.list_history_by_user(user_id, _naive(now))
 
-    def delete(self, *, user_id: int, reminder_id: int):
-        obj = self.repo.get(reminder_id)
-        if not obj or obj.user_id != user_id:
-            raise HTTPException(status_code=404, detail="No encontrado")
-        self.repo.delete(obj)
+    def delete(self, *, user_id: int, reminder_ids: list[int]):
+        invalid: list[int] = []
+        objs_to_delete: list = []
+
+        for rid in reminder_ids:
+            obj = self.repo.get(rid)
+            if not obj or obj.user_id != user_id:
+                invalid.append(rid)
+            else:
+                objs_to_delete.append(obj)
+
+        if invalid:
+            # Mostrar las ids que no se pudieron borrar por no existir o no pertenecer
+            raise HTTPException(status_code=404, detail={"not_found_or_forbidden_ids": invalid})
+
+        for obj in objs_to_delete:
+            self.repo.delete(obj)
 
     def set_status(self, *, user_id: int, reminder_id: int, status: str):
         if status not in ("PENDIENTE", "ASISTIDO", "NO_ASISTIDO"):

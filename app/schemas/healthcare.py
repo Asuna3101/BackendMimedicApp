@@ -35,6 +35,10 @@ class AppointmentReminderUpdate(BaseModel):
     starts_at: datetime | None = None  # local, sin tz
     notes: str | None = None
 
+
+class ReminderIdsIn(BaseModel):
+    reminder_ids: list[int]
+
 AppointmentStatus = Literal["PENDIENTE", "ASISTIDO", "NO_ASISTIDO"]
 
 class AppointmentReminderOut(BaseModel):

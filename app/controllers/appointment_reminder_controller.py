@@ -36,8 +36,8 @@ class AppointmentReminderController:
         return self.svc.set_status(user_id=user_id, reminder_id=reminder_id, status=status)
 
     # Eliminar
-    def delete(self, user_id: int, reminder_id: int):
-        return self.svc.delete(user_id=user_id, reminder_id=reminder_id)
+    def delete(self, user_id: int, reminder_ids: list[int]):
+        return self.svc.delete(user_id=user_id, reminder_ids=reminder_ids)
 
     # Actualizar
     def update(self, user_id: int, reminder_id: int, data: AppointmentReminderUpdate):

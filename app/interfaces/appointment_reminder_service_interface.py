@@ -21,5 +21,5 @@ class IAppointmentReminderService(ABC):
         pass
 
     @abstractmethod
-    def delete(self, *, user_id: int, reminder_id: int) -> None:
+    def delete(self, *, user_id: int, reminder_ids: list[int]) -> None:
         pass
