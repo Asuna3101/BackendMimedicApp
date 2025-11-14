@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.services.appointment_reminder_service import AppointmentReminderService
-from app.schemas.healthcare import AppointmentReminderCreate
+from app.schemas.healthcare import AppointmentReminderCreate, AppointmentReminderUpdate
 
 class AppointmentReminderController:
 
@@ -38,3 +38,15 @@ class AppointmentReminderController:
     # Eliminar
     def delete(self, user_id: int, reminder_id: int):
         return self.svc.delete(user_id=user_id, reminder_id=reminder_id)
+
+    # Actualizar
+    def update(self, user_id: int, reminder_id: int, data: AppointmentReminderUpdate):
+        return self.svc.update(
+            user_id=user_id,
+            reminder_id=reminder_id,
+            clinic_id=data.clinic_id,
+            specialty_id=data.specialty_id,
+            doctor_id=data.doctor_id,
+            starts_at=data.starts_at,
+            notes=data.notes,
+        )

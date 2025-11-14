@@ -19,6 +19,10 @@ class IAppointmentReminderRepository(ABC):
         pass
 
     @abstractmethod
+    def update(self, reminder_id: int, update_data: dict) -> Optional[AppointmentReminder]:
+        pass
+
+    @abstractmethod
     def list_by_user(self, user_id: int) -> List[AppointmentReminder]:
         pass
 

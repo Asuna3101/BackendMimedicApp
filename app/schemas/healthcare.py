@@ -27,6 +27,14 @@ class AppointmentReminderCreate(BaseModel):
     starts_at: datetime  # local, sin tz
     notes: str | None = None
 
+
+class AppointmentReminderUpdate(BaseModel):
+    clinic_id: int | None = None
+    specialty_id: int | None = None
+    doctor_id: int | None = None
+    starts_at: datetime | None = None  # local, sin tz
+    notes: str | None = None
+
 AppointmentStatus = Literal["PENDIENTE", "ASISTIDO", "NO_ASISTIDO"]
 
 class AppointmentReminderOut(BaseModel):

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.v1.endpoints.dependencies import get_current_user
 from app.controllers.appointment_reminder_controller import AppointmentReminderController
-from app.schemas.healthcare import AppointmentReminderCreate, AppointmentReminderOut, StatusIn
+from app.schemas.healthcare import AppointmentReminderCreate, AppointmentReminderOut, StatusIn, AppointmentReminderUpdate
 
 router = APIRouter()
 
@@ -52,6 +52,16 @@ def set_status(
 ):
     _ctl(db).set_status(current_user.id, reminder_id, payload.status)
     return
+
+
+@router.put("/update/{reminder_id}", response_model=AppointmentReminderOut)
+def update_appointment_reminder(
+    reminder_id: int,
+    payload: AppointmentReminderUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    return _ctl(db).update(current_user.id, reminder_id, payload)
 
 @router.delete("/{reminder_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_appointment_reminder(

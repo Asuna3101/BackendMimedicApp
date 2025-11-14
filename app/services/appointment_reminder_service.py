@@ -50,3 +50,50 @@ class AppointmentReminderService:
         if not obj or obj.user_id != user_id:
             raise HTTPException(status_code=404, detail="No encontrado")
         return self.repo.set_status(obj, status)
+
+    def update(self, *, user_id: int, reminder_id: int, clinic_id: int | None,
+               specialty_id: int | None, doctor_id: int | None,
+               starts_at: datetime | None, notes: str | None):
+        obj = self.repo.get(reminder_id)
+        if not obj or obj.user_id != user_id:
+            raise HTTPException(status_code=404, detail="No encontrado")
+
+        update_data: dict = {}
+
+        # compute target values for validation
+        target_doctor = doctor_id if doctor_id is not None else obj.doctor_id
+        target_start = _naive(starts_at) if starts_at is not None else _naive(obj.starts_at)
+
+        # If starts_at provided or doctor changed, check conflicts
+        if starts_at is not None or doctor_id is not None:
+            # check same user + doctor + same time (ignore self)
+            other = self.repo.find_user_doctor_same_time(user_id, target_doctor, target_start)
+            if other and getattr(other, "id", None) != getattr(obj, "id", None):
+                raise HTTPException(status_code=409, detail="Ya registraste esa cita con ese doctor a esa hora.")
+
+            # check doctor in ±WINDOW minutes (ignore self)
+            other2 = self.repo.find_doctor_in_window(target_doctor, target_start, WINDOW)
+            if other2 and getattr(other2, "id", None) != getattr(obj, "id", None):
+                raise HTTPException(status_code=409, detail="Otra cita para el mismo doctor dentro de ±15 minutos.")
+
+        # Prepare update_data dict with provided fields
+        if clinic_id is not None:
+            update_data["clinic_id"] = clinic_id
+        if specialty_id is not None:
+            update_data["specialty_id"] = specialty_id
+        if doctor_id is not None:
+            update_data["doctor_id"] = doctor_id
+        if starts_at is not None:
+            update_data["starts_at"] = starts_at
+        if notes is not None:
+            update_data["notes"] = notes
+
+        # If no fields to update, simply return the current object
+        if not update_data:
+            return obj
+
+        updated = self.repo.update(reminder_id, update_data)
+        if not updated:
+            # unlikely because we fetched earlier, but be defensive
+            raise HTTPException(status_code=404, detail="No encontrado")
+        return updated
