@@ -22,7 +22,7 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
 
     def get_by_usuario(self, id_usuario: int):
         return (
-            self.db.query(EjercicioUsuario)
+            self.db.query(EjercicioUsuario, Ejercicio)
             .join(Ejercicio, Ejercicio.id == EjercicioUsuario.idEjercicio)
             .filter(EjercicioUsuario.idUsuario == id_usuario)
             .order_by(desc(EjercicioUsuario.createdAt))
