@@ -9,10 +9,15 @@ from sqlalchemy.orm import Session
 # --- Usuarios / Auth ---
 from app.interfaces.ejercicio_repository_interface import IEjercicioRepository
 from app.interfaces.ejercicio_service_interface import IEjercicioService
+from app.interfaces.ejercicio_usuario_repository_interface import IEjercicioUsuarioRepository
+from app.interfaces.ejercicio_usuario_service_interface import IEjercicioUsuarioService
 from app.interfaces.user_service_interface import IUserService
 from app.interfaces.user_repository_interface import IUserRepository
 from app.interfaces.auth_interface import IPasswordHasher, ITokenGenerator
+from app.repositories.ejercicioUsuario_repo import EjercicioUsuarioRepository
+from app.repositories.ejercicio_repository import EjercicioRepository
 from app.repositories.user_repository import UserRepository
+from app.services.ejercicioUsuario_service import EjercicioUsuarioService
 from app.services.ejercicio_service import EjercicioService
 from app.services.user_service import UserService
 from app.auth.password_hasher import BcryptPasswordHasher
@@ -127,9 +132,20 @@ class ServiceFactory:
     # ====== EJERCICIO ======
     @staticmethod
     def create_ejercicio_repository(db: Session) -> IEjercicioRepository:
-        from app.repositories.ejercicio_repository import EjercicioRepository
         return EjercicioRepository(db)
 
     @staticmethod
     def create_ejercicio_service(ejercicio_repo: IEjercicioRepository) -> IEjercicioService:
         return EjercicioService(ejercicio_repo)
+    
+        # ===== EJERCICIO x USUARIO =====
+    @staticmethod
+    def create_ejercicio_usuario_repository(db: Session) -> IEjercicioUsuarioRepository:
+        return EjercicioUsuarioRepository(db)
+
+    @staticmethod
+    def create_ejercicio_usuario_service(
+        ejxuser_repo: IEjercicioUsuarioRepository,
+        ejercicio_repo: IEjercicioRepository
+    ) -> IEjercicioUsuarioService:
+        return EjercicioUsuarioService(ejxuser_repo, ejercicio_repo)

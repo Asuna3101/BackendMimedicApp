@@ -11,7 +11,6 @@ class EjercicioUsuario(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     idUsuario = Column(Integer, ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False)
     idEjercicio = Column(Integer, ForeignKey("ejercicios.id", ondelete="CASCADE"), nullable=False)
-    idUnidad = Column(Integer, ForeignKey("unidades.id", ondelete="CASCADE"), nullable=False)
     
     notas = Column(String(255), nullable=True)
     horario = Column(DateTime(timezone=True), nullable=True)
