@@ -81,6 +81,19 @@ class AppointmentReminderRepository:
         self.db.refresh(obj)
         return obj
 
+    def update(self, reminder_id: int, update_data: dict):
+        obj = self.get(reminder_id)
+        if not obj:
+            return None
+
+        for field, value in update_data.items():
+            if hasattr(obj, field):
+                setattr(obj, field, value)
+
+        self.db.commit()
+        self.db.refresh(obj)
+        return obj
+
     def delete(self, obj: AppointmentReminder):
         self.db.delete(obj)
         self.db.commit()

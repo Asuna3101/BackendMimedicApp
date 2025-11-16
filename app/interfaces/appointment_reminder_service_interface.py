@@ -11,9 +11,15 @@ class IAppointmentReminderService(ABC):
         pass
 
     @abstractmethod
+    def update(self, *, user_id: int, reminder_id: int, clinic_id: int | None,
+               specialty_id: int | None, doctor_id: int | None,
+               starts_at: datetime | None, notes: str | None) -> AppointmentReminder:
+        pass
+
+    @abstractmethod
     def list_by_user(self, *, user_id: int) -> List[AppointmentReminder]:
         pass
 
     @abstractmethod
-    def delete(self, *, user_id: int, reminder_id: int) -> None:
+    def delete(self, *, user_id: int, reminder_ids: list[int]) -> None:
         pass
