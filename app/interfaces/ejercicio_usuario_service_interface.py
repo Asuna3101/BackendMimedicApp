@@ -18,11 +18,11 @@ class IEjercicioUsuarioService(ABC):
         pass
 
     @abstractmethod
-    def actualizar_ejercicio_usuario(self, ejxuser_id: int, data) -> Optional[dict]:
+    def actualizar_ejercicio_usuario(self, ejxuser_id: int, data) -> dict:
         """Actualizar un ejercicio del usuario"""
         pass
 
     @abstractmethod
-    def eliminar_ejercicio_usuario(self, ejxuser_id: int) -> bool:
+    def eliminar_ejercicio_usuario(self, id_usuario: int, ejxuser_id: int) -> bool:
         """Eliminar un ejercicio del usuario"""
         pass

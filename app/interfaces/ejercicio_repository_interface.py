@@ -17,6 +17,11 @@ class IEjercicioRepository(ABC):
         pass
     
     @abstractmethod
+    def get_by_id(self, id_ejercicio: int) -> Optional[Ejercicio]:
+        """Obtener ejercicio por ID"""
+        pass
+    
+    @abstractmethod
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Ejercicio]:
         """Obtener lista paginada de ejercicios"""
         pass

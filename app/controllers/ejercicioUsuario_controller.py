@@ -30,7 +30,13 @@ class EjercicioUsuarioController:
             raise HTTPException(status_code=404, detail="Ejercicio no encontrado")
         return updated
 
-    def eliminar(self, ejercicio_id: int):
-        if not self.service.eliminar_ejercicio_usuario(ejercicio_id):
-            raise HTTPException(status_code=404, detail="Ejercicio no encontrado")
-        return {"message": "Ejercicio eliminado correctamente"}
+    def eliminar(self, id_usuario: int, ejercicio_id: int):
+        try:
+            return self.service.eliminar_ejercicio_usuario(id_usuario, ejercicio_id)
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error al eliminar ejercicio: {str(e)}"
+            )

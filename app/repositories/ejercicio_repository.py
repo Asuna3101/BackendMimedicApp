@@ -9,6 +9,9 @@ class EjercicioRepository(IEjercicioRepository):
 
     def get_by_nombre(self, nombre: str) -> Ejercicio | None:
         return self.db.query(Ejercicio).filter(Ejercicio.nombre == nombre).first()
+    
+    def get_by_id(self, id_ejercicio) -> Ejercicio | None:
+        return self.db.query(Ejercicio).filter(Ejercicio.id == id_ejercicio).first()
 
     def get_or_create_ejercicio(self, nombre: str) -> Ejercicio:
         ej = self.get_by_nombre(nombre)

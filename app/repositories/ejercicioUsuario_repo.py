@@ -29,7 +29,7 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
             .all()
         )
 
-    def update(self, ejercicio_id: int, data: dict):
+    def update(self, ejercicio_id: int, data: dict) -> EjercicioUsuario:
         ejxuser = (
             self.db.query(EjercicioUsuario)
             .filter(EjercicioUsuario.id == ejercicio_id)
@@ -45,10 +45,13 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
         self.db.refresh(ejxuser)
         return ejxuser
 
-    def delete(self, ejercicio_id: int) -> bool:
+    def delete(self, id_usuario: int, ejercicio_id: int) -> bool:
         ejxuser = (
             self.db.query(EjercicioUsuario)
-            .filter(EjercicioUsuario.id == ejercicio_id)
+            .filter(
+                EjercicioUsuario.id == ejercicio_id,
+                EjercicioUsuario.idUsuario == id_usuario
+            )
             .first()
         )
         if not ejxuser:

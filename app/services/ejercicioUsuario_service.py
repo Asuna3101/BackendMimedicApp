@@ -19,11 +19,9 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
     def registrar_ejercicio_usuario(self, id_usuario: int, data):
         ejercicio = self.ejercicio_repo.get_or_create_ejercicio(data.nombre)
 
-        # Validaciones básicas
         if not data.nombre.strip():
             raise ValueError("El nombre del ejercicio es obligatorio")
         
-        # Crear data final
         ejxuser_data = {
             "idUsuario": id_usuario,
             "idEjercicio": ejercicio.id,      
@@ -36,8 +34,10 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
 
         return {
             "id": ejxuser.id,
-            "nombre": data.nombre,
-            "message": "Ejercicio guardado correctamente"
+            "nombre": ejercicio.nombre,
+            "notas": ejxuser.notas,
+            "horario": ejxuser.horario,
+            "duracion_min": ejxuser.duracion_min
         }
 
     def obtener_ejercicios_usuario(self, id_usuario: int):
@@ -54,16 +54,29 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             for exu, e in rows
         ]
 
-# probablamente para actualizar se tenga que validar que el nombre del ejercicio sea nuevo o ya este creado, con el get_or_create del ejercicio
     def actualizar_ejercicio_usuario(self, ejercicio_id: int, data):
-        ejxuser = self.ejxuser_repo.update(ejercicio_id, data.dict(exclude_unset=True))
+        update_data = data.dict(exclude_unset=True)
+        
+        if "nombre" in update_data:
+            ejercicio = self.ejercicio_repo.get_or_create_ejercicio(update_data.pop("nombre"))
+            update_data["idEjercicio"] = ejercicio.id
+        
+        ejxuser = self.ejxuser_repo.update(ejercicio_id, update_data)
         if not ejxuser:
             return None
         
+        ejercicio = self.ejercicio_repo.get_by_id(ejxuser.idEjercicio)
+        
         return {
             "id": ejxuser.id,
-            "message": "Ejercicio actualizado correctamente"
+            "nombre": ejercicio.nombre,
+            "notas": ejxuser.notas,
+            "horario": ejxuser.horario,
+            "duracion_min": ejxuser.duracion_min
         }
 
-    def eliminar_ejercicio_usuario(self, ejercicio_id: int) -> bool:
-        return self.ejxuser_repo.delete(ejercicio_id)
+    def eliminar_ejercicio_usuario(self, id_usuario: int, ejercicio_id: int) -> bool:
+        eliminado = self.ejxuser_repo.delete(id_usuario, ejercicio_id)
+        if not eliminado:
+            raise ValueError("No se pudo eliminar el ejercicio (no existe o no pertenece al usuario)")
+        return True

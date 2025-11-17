@@ -12,10 +12,10 @@ class EjercicioUsuarioCreate(BaseModel):
     duracion_min: int
 
 class EjercicioUsuarioUpdate(BaseModel):
-    nombre: Optional[str]
-    notas: Optional[str]
-    horario: Optional[datetime]
-    duracion_min: Optional[int]
+    nombre: Optional[str] = None
+    notas: Optional[str] = None
+    horario: Optional[datetime] = None
+    duracion_min: Optional[int] = None
 
 class EjercicioUsuarioResponse(BaseModel):
     id: int

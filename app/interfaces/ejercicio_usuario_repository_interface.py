@@ -20,19 +20,12 @@ class IEjercicioUsuarioRepository(ABC):
         """Obtener ejercicios por usuario"""
         pass
 
-    # posiblemente se borre
-    # @abstractmethod
-    # def get_by_id(self, id_ejxuser: int) -> Optional[EjercicioUsuario]:
-    #     """Obtener un registro ejercicio_usuario por su ID"""
-    #     pass
-
     @abstractmethod
-    def update(self, id_ejxuser: int, data: dict) -> Optional[EjercicioUsuario]:
+    def update(self, id_ejxuser: int, data: dict) -> EjercicioUsuario:
         """Actualizar un registro ejercicio_usuario"""
         pass
 
     @abstractmethod
     def delete(self, id_usuario: int, id_ejxuser: int) -> bool:
-        """Eliminar un registro ejercicio_usuario si pertenece al usuario.
-        """
+        """Eliminar un registro ejercicio_usuario si pertenece al usuario."""
         pass
