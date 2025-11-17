@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.ejercicio import Ejercicio
 from app.models.ejercicioUsuario import EjercicioUsuario
 from app.interfaces.ejercicio_usuario_repository_interface import IEjercicioUsuarioRepository
+from datetime import time, timedelta, datetime
 
 
 class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
@@ -27,6 +28,13 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
             .filter(EjercicioUsuario.idUsuario == id_usuario)
             .order_by(desc(EjercicioUsuario.createdAt))
             .all()
+        )
+
+    def get_by_id(self, ejercicio_id: int) -> EjercicioUsuario:
+        return (
+            self.db.query(EjercicioUsuario)
+            .filter(EjercicioUsuario.id == ejercicio_id)
+            .first()
         )
 
     def update(self, ejercicio_id: int, data: dict) -> EjercicioUsuario:
@@ -57,3 +65,44 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
         
         self.db.commit()
         return deleted_count > 0
+
+    def check_horario_conflict(self, id_usuario: int, horario: time, duracion_min: int, exclude_id: int = None) -> bool:
+        """Verifica si hay conflicto de horarios para un usuario.
+        
+        Args:
+            id_usuario: ID del usuario
+            horario: Hora de inicio del ejercicio
+            duracion_min: Duración en minutos
+            exclude_id: ID del ejercicio a excluir (para updates)
+            
+        Returns:
+            True si hay conflicto, False si no hay conflicto
+        """
+        # Convertir time a datetime para hacer cálculos
+        hoy = datetime.today().date()
+        inicio = datetime.combine(hoy, horario)
+        fin = inicio + timedelta(minutes=duracion_min)
+        
+        # Obtener todos los ejercicios del usuario
+        query = (
+            self.db.query(EjercicioUsuario)
+            .filter(EjercicioUsuario.idUsuario == id_usuario)
+        )
+        
+        # Excluir el ejercicio actual si es un update
+        if exclude_id:
+            query = query.filter(EjercicioUsuario.id != exclude_id)
+        
+        ejercicios_existentes = query.all()
+        
+        # Verificar conflictos con cada ejercicio existente
+        for ej in ejercicios_existentes:
+            if ej.horario and ej.duracion_min:
+                ej_inicio = datetime.combine(hoy, ej.horario)
+                ej_fin = ej_inicio + timedelta(minutes=ej.duracion_min)
+                
+                # Verificar solapamiento
+                if (inicio < ej_fin) and (fin > ej_inicio):
+                    return True
+        
+        return False

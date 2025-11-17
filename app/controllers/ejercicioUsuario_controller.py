@@ -25,10 +25,18 @@ class EjercicioUsuarioController:
         return self.service.obtener_ejercicios_usuario(id_usuario)
 
     def actualizar(self, ejercicio_id: int, data):
-        updated = self.service.actualizar_ejercicio_usuario(ejercicio_id, data)
-        if not updated:
-            raise HTTPException(status_code=404, detail="Ejercicio no encontrado")
-        return updated
+        try:
+            result = self.service.actualizar_ejercicio_usuario(ejercicio_id, data)
+            if not result:
+                raise HTTPException(status_code=404, detail="Ejercicio no encontrado")
+            return result
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error al actualizar ejercicio: {str(e)}"
+            )
 
     def eliminar(self, id_usuario: int, ejercicio_ids: list[int]):
         try:

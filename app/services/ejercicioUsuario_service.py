@@ -19,9 +19,15 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
     def registrar_ejercicio_usuario(self, id_usuario: int, data):
         ejercicio = self.ejercicio_repo.get_or_create_ejercicio(data.nombre)
 
+        # Validaciones básicas
         if not data.nombre.strip():
             raise ValueError("El nombre del ejercicio es obligatorio")
         
+        # Validar conflicto de horarios
+        if self.ejxuser_repo.check_horario_conflict(id_usuario, data.horario, data.duracion_min):
+            raise ValueError("Ya tienes un ejercicio programado en ese horario")
+        
+        # Crear data final
         ejxuser_data = {
             "idUsuario": id_usuario,
             "idEjercicio": ejercicio.id,      
@@ -61,10 +67,31 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             ejercicio = self.ejercicio_repo.get_or_create_ejercicio(update_data.pop("nombre"))
             update_data["idEjercicio"] = ejercicio.id
         
+        # Validar conflicto de horarios si se actualiza horario o duración
+        if "horario" in update_data or "duracion_min" in update_data:
+            # Obtener el ejercicio actual
+            ejxuser_actual = self.ejxuser_repo.get_by_id(ejercicio_id)
+            if not ejxuser_actual:
+                return None
+            
+            # Usar valores nuevos o actuales
+            horario = update_data.get("horario", ejxuser_actual.horario)
+            duracion_min = update_data.get("duracion_min", ejxuser_actual.duracion_min)
+            
+            # Verificar conflicto (excluyendo el ejercicio actual)
+            if self.ejxuser_repo.check_horario_conflict(
+                ejxuser_actual.idUsuario, 
+                horario, 
+                duracion_min, 
+                exclude_id=ejercicio_id
+            ):
+                raise ValueError("Ya tienes un ejercicio programado en ese horario")
+        
         ejxuser = self.ejxuser_repo.update(ejercicio_id, update_data)
         if not ejxuser:
             return None
         
+        # Obtener el ejercicio relacionado para el nombre
         ejercicio = self.ejercicio_repo.get_by_id(ejxuser.idEjercicio)
         
         return {
