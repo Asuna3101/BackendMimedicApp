@@ -26,6 +26,6 @@ class IEjercicioUsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, id_usuario: int, id_ejxuser: int) -> bool:
-        """Eliminar un registro ejercicio_usuario si pertenece al usuario."""
+    def delete(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:
+        """Eliminar múltiples registros ejercicio_usuario del usuario."""
         pass

@@ -26,3 +26,6 @@ class EjercicioUsuarioResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class EjercicioUsuarioDeleteMultiple(BaseModel):
+    ids: list[int]

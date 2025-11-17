@@ -75,8 +75,13 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             "duracion_min": ejxuser.duracion_min
         }
 
-    def eliminar_ejercicio_usuario(self, id_usuario: int, ejercicio_id: int) -> bool:
-        eliminado = self.ejxuser_repo.delete(id_usuario, ejercicio_id)
+    def eliminar_ejercicios_usuario(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:
+        if not ejercicio_ids:
+            raise ValueError("Debe proporcionar al menos un ID para eliminar")
+        
+        eliminado = self.ejxuser_repo.delete(id_usuario, ejercicio_ids)
+        
         if not eliminado:
-            raise ValueError("No se pudo eliminar el ejercicio (no existe o no pertenece al usuario)")
+            raise ValueError("No se encontraron ejercicios para eliminar (no existen o no pertenecen al usuario)")
+        
         return True

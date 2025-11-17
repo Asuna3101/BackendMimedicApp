@@ -23,6 +23,6 @@ class IEjercicioUsuarioService(ABC):
         pass
 
     @abstractmethod
-    def eliminar_ejercicio_usuario(self, id_usuario: int, ejxuser_id: int) -> bool:
-        """Eliminar un ejercicio del usuario"""
+    def eliminar_ejercicios_usuario(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:
+        """Eliminar múltiples ejercicios del usuario"""
         pass

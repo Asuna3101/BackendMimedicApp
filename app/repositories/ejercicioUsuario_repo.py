@@ -45,18 +45,15 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
         self.db.refresh(ejxuser)
         return ejxuser
 
-    def delete(self, id_usuario: int, ejercicio_id: int) -> bool:
-        ejxuser = (
+    def delete(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:
+        deleted_count = (
             self.db.query(EjercicioUsuario)
             .filter(
-                EjercicioUsuario.id == ejercicio_id,
+                EjercicioUsuario.id.in_(ejercicio_ids),
                 EjercicioUsuario.idUsuario == id_usuario
             )
-            .first()
+            .delete(synchronize_session=False)
         )
-        if not ejxuser:
-            return False
-
-        self.db.delete(ejxuser)
+        
         self.db.commit()
-        return True
+        return deleted_count > 0

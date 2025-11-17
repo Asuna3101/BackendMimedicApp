@@ -8,7 +8,7 @@ from app.controllers.ejercicioUsuario_controller import EjercicioUsuarioControll
 from app.controllers.ejercicio_controller import EjercicioController
 from app.core.database import get_db
 from app.schemas.ejercicio import EjercicioResponse
-from app.schemas.ejercicioUsuario import EjercicioUsuarioCreate, EjercicioUsuarioResponse, EjercicioUsuarioUpdate
+from app.schemas.ejercicioUsuario import EjercicioUsuarioCreate, EjercicioUsuarioDeleteMultiple, EjercicioUsuarioResponse, EjercicioUsuarioUpdate
 
 router = APIRouter()
 
@@ -43,14 +43,13 @@ def actualizar_ejercicio_usuario(
     controller = EjercicioUsuarioController(db)
     return controller.actualizar(id, data)
 
-@router.delete("/usuario/{id}")
-def eliminar_ejercicio(
-    id: int,
+@router.delete("/usuario")
+def eliminar_ejercicios_multiple(
+    data: EjercicioUsuarioDeleteMultiple,
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
     controller = EjercicioUsuarioController(db)
-    controller.eliminar(user.id, id)
-    return {"message": "Ejercicio eliminado correctamente"}
+    return controller.eliminar(user.id, data.ids)
 
 
