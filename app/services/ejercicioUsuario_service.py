@@ -9,9 +9,9 @@ from app.interfaces.ejercicio_usuario_service_interface import IEjercicioUsuario
 class EjercicioUsuarioService(IEjercicioUsuarioService):
 
     def __init__(
-            self, 
-            ejxuser_repo: IEjercicioUsuarioRepository,
-            ejercicio_repo: IEjercicioRepository
+        self, 
+        ejxuser_repo: IEjercicioUsuarioRepository,
+        ejercicio_repo: IEjercicioRepository
     ):
         self.ejxuser_repo = ejxuser_repo
         self.ejercicio_repo = ejercicio_repo
@@ -33,7 +33,8 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             "idEjercicio": ejercicio.id,      
             "notas": data.notas,
             "horario": data.horario,
-            "duracion_min": data.duracion_min
+            "duracion_min": data.duracion_min,
+            "realizado": data.realizado,
         }
 
         ejxuser = self.ejxuser_repo.create(ejxuser_data)
@@ -43,10 +44,13 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             "nombre": ejercicio.nombre,
             "notas": ejxuser.notas,
             "horario": ejxuser.horario,
-            "duracion_min": ejxuser.duracion_min
+            "duracion_min": ejxuser.duracion_min,
+            "realizado": ejxuser.realizado
         }
 
     def obtener_ejercicios_usuario(self, id_usuario: int):
+        self.ejxuser_repo.reset_realizados_diarios(id_usuario)
+        
         rows = self.ejxuser_repo.get_by_usuario(id_usuario)
 
         return [
@@ -56,6 +60,7 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
                 "notas": exu.notas,
                 "horario": exu.horario,
                 "duracion_min": exu.duracion_min,
+                "realizado": exu.realizado,
             }
             for exu, e in rows
         ]
@@ -99,7 +104,8 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             "nombre": ejercicio.nombre,
             "notas": ejxuser.notas,
             "horario": ejxuser.horario,
-            "duracion_min": ejxuser.duracion_min
+            "duracion_min": ejxuser.duracion_min,
+            "realizado": ejxuser.realizado
         }
 
     def eliminar_ejercicios_usuario(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:

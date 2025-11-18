@@ -39,3 +39,8 @@ class IEjercicioUsuarioRepository(ABC):
     def check_horario_conflict(self, id_usuario: int, horario: time, duracion_min: int, exclude_id: int = None) -> bool:
         """Verificar si hay conflicto de horarios"""
         pass
+    
+    @abstractmethod
+    def reset_realizados_diarios(self, id_usuario: int) -> bool:
+        """Reiniciar los ejercicios realizados diariamente"""
+        pass

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.ejercicio import Ejercicio
 from app.models.ejercicioUsuario import EjercicioUsuario
 from app.interfaces.ejercicio_usuario_repository_interface import IEjercicioUsuarioRepository
-from datetime import time, timedelta, datetime
+from datetime import time, timedelta, datetime, date
 
 
 class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
@@ -67,23 +67,10 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
         return deleted_count > 0
 
     def check_horario_conflict(self, id_usuario: int, horario: time, duracion_min: int, exclude_id: int = None) -> bool:
-        """Verifica si hay conflicto de horarios para un usuario.
-        
-        Args:
-            id_usuario: ID del usuario
-            horario: Hora de inicio del ejercicio
-            duracion_min: Duración en minutos
-            exclude_id: ID del ejercicio a excluir (para updates)
-            
-        Returns:
-            True si hay conflicto, False si no hay conflicto
-        """
-        # Convertir time a datetime para hacer cálculos
         hoy = datetime.today().date()
         inicio = datetime.combine(hoy, horario)
         fin = inicio + timedelta(minutes=duracion_min)
         
-        # Obtener todos los ejercicios del usuario
         query = (
             self.db.query(EjercicioUsuario)
             .filter(EjercicioUsuario.idUsuario == id_usuario)
@@ -104,5 +91,30 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
                 # Verificar solapamiento
                 if (inicio < ej_fin) and (fin > ej_inicio):
                     return True
+        
+        return False
+
+    def reset_realizados_diarios(self, id_usuario: int) -> bool:
+        hoy = date.today()
+        
+        # Solo resetear ejercicios que NO fueron reseteados hoy
+        updated = (
+            self.db.query(EjercicioUsuario)
+            .filter(
+                EjercicioUsuario.idUsuario == id_usuario,
+                (EjercicioUsuario.ultimo_realizado < hoy) | (EjercicioUsuario.ultimo_realizado == None)
+            )
+            .update(
+                {
+                    "realizado": False,
+                    "ultimo_realizado": hoy
+                },
+                synchronize_session=False
+            )
+        )
+        
+        if updated > 0:
+            self.db.commit()
+            return True
         
         return False
