@@ -37,6 +37,18 @@ from app.interfaces.appointment_reminder_repository_interface import IAppointmen
 from app.interfaces.appointment_reminder_service_interface import IAppointmentReminderService
 from app.repositories.appointment_reminder_repo import AppointmentReminderRepository
 from app.services.appointment_reminder_service import AppointmentReminderService
+# --- COMIDAS ---
+from app.interfaces.comida_repository_interface import IComidaRepository
+from app.interfaces.comida_service_interface import IComidaService
+from app.repositories.comidas_repo import ComidaRepository
+from app.services.comida_service import ComidaService
+# ====== CATEGORIAS ======
+from app.interfaces.categoria_repository_interface import ICategoriaRepository
+from app.interfaces.categoria_service_interface import ICategoriaService
+from app.repositories.categoria_repo import CategoriaRepository
+from app.services.categoria_service import CategoriaService
+from app.repositories.comidas_usuario_repo import ComidaUsuarioRepository
+from app.services.comidas_usuario_service import ComidasUsuarioService
 
 
 class ServiceFactory:
@@ -120,3 +132,30 @@ class ServiceFactory:
     @staticmethod
     def create_appointment_reminder_service(db: Session) -> IAppointmentReminderService:
         return AppointmentReminderService(db)
+
+    # ====== COMIDAS ======
+    @staticmethod
+    def create_comida_repository(db: Session) -> IComidaRepository:
+        return ComidaRepository(db)
+
+    @staticmethod
+    def create_comida_service(comida_repo: IComidaRepository) -> IComidaService:
+        return ComidaService(comida_repo)
+    
+    # ====== CATEGORIAS ======
+    @staticmethod
+    def create_categoria_repository(db: Session) -> ICategoriaRepository:
+        return CategoriaRepository(db)
+
+    @staticmethod
+    def create_categoria_service(cat_repo: ICategoriaRepository) -> ICategoriaService:
+        return CategoriaService(cat_repo)
+
+    # ====== COMIDAS x USUARIO ======
+    @staticmethod
+    def create_comida_usuario_repository(db: Session) -> ComidaUsuarioRepository:
+        return ComidaUsuarioRepository(db)
+
+    @staticmethod
+    def create_comida_usuario_service(cu_repo: ComidaUsuarioRepository) -> ComidasUsuarioService:
+        return ComidasUsuarioService(cu_repo)

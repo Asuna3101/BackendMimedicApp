@@ -14,4 +14,7 @@ from app.models.specialty import Specialty
 from app.models.doctor import Doctor
 from app.models.clinic_specialty import ClinicSpecialty
 from app.models.appointment_reminder import AppointmentReminder
+from app.models.comidas import Alimento
+from app.models.categoria import Categoria
+from app.models.comidas_usuario import ComidaUsuario
 

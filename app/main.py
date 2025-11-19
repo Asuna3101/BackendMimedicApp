@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.v1.endpoints import auth, medicamentoxusuario, toma, unidad, healthcare, appointment_reminders
+from app.api.v1.endpoints import auth, medicamentoxusuario, toma, unidad, healthcare, appointment_reminders, comidas, categorias
 from app.core.database import engine
 from app.models import base
 from app.seeders.run_seeders import run_all_seeders
@@ -29,6 +29,8 @@ app.include_router(unidad.router,prefix=f"{settings.API_V1_STR}/unidades",tags=[
 app.include_router(toma.router,prefix=f"{settings.API_V1_STR}/tomas",tags=["tomas"],)
 app.include_router(healthcare.router,prefix=f"{settings.API_V1_STR}/health",tags=["healthcare"],)
 app.include_router(appointment_reminders.router,prefix=f"{settings.API_V1_STR}/health/appointment-reminders",tags=["citas"],)
+app.include_router(comidas.router,prefix=f"{settings.API_V1_STR}/comidas",tags=["comidas-catalogo"],)
+app.include_router(categorias.router,prefix=f"{settings.API_V1_STR}/categorias",tags=["categorias"],)
 
 @app.get("/")
 def read_root():
