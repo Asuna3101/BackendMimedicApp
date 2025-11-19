@@ -15,7 +15,7 @@ from app.interfaces.user_service_interface import IUserService
 from app.interfaces.user_repository_interface import IUserRepository
 from app.interfaces.auth_interface import IPasswordHasher, ITokenGenerator
 from app.repositories.ejercicioUsuario_repo import EjercicioUsuarioRepository
-from app.repositories.ejercicio_repository import EjercicioRepository
+from app.repositories.ejercicio_repo import EjercicioRepository
 from app.repositories.user_repository import UserRepository
 from app.services.ejercicioUsuario_service import EjercicioUsuarioService
 from app.services.ejercicio_service import EjercicioService
@@ -138,7 +138,7 @@ class ServiceFactory:
     def create_ejercicio_service(ejercicio_repo: IEjercicioRepository) -> IEjercicioService:
         return EjercicioService(ejercicio_repo)
     
-        # ===== EJERCICIO x USUARIO =====
+    # ===== EJERCICIO x USUARIO =====
     @staticmethod
     def create_ejercicio_usuario_repository(db: Session) -> IEjercicioUsuarioRepository:
         return EjercicioUsuarioRepository(db)

@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.factories.service_factory import ServiceFactory
 
@@ -14,27 +14,33 @@ class EjercicioUsuarioController:
         try:
             return self.service.registrar_ejercicio_usuario(id_usuario, data)
         except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
         except Exception as e:
             raise HTTPException(
-                status_code=500,
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al registrar ejercicio: {str(e)}"
             )
 
     def listar(self, id_usuario: int):
-        return self.service.obtener_ejercicios_usuario(id_usuario)
+        try:
+            return self.service.obtener_ejercicios_usuario(id_usuario)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error al obtener ejercicios del usuario: {str(e)}"
+            )
 
     def actualizar(self, ejercicio_id: int, data):
         try:
             result = self.service.actualizar_ejercicio_usuario(ejercicio_id, data)
             if not result:
-                raise HTTPException(status_code=404, detail="Ejercicio no encontrado")
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ejercicio no encontrado")
             return result
         except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
         except Exception as e:
             raise HTTPException(
-                status_code=500,
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al actualizar ejercicio: {str(e)}"
             )
 
@@ -46,9 +52,9 @@ class EjercicioUsuarioController:
                 "message": "Ejercicios eliminados correctamente"
             }
         except ValueError as e:
-            raise HTTPException(status_code=404, detail=str(e))
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
         except Exception as e:
             raise HTTPException(
-                status_code=500,
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al eliminar ejercicios: {str(e)}"
             )

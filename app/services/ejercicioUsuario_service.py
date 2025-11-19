@@ -65,7 +65,7 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
             for exu, e in rows
         ]
 
-    def actualizar_ejercicio_usuario(self, ejercicio_id: int, data):
+    def actualizar_ejercicio_usuario(self, ejxuser_id: int, data):
         update_data = data.dict(exclude_unset=True)
         
         if "nombre" in update_data:
@@ -75,7 +75,7 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
         # Validar conflicto de horarios si se actualiza horario o duración
         if "horario" in update_data or "duracion_min" in update_data:
             # Obtener el ejercicio actual
-            ejxuser_actual = self.ejxuser_repo.get_by_id(ejercicio_id)
+            ejxuser_actual = self.ejxuser_repo.get_by_id(ejxuser_id)
             if not ejxuser_actual:
                 return None
             
@@ -88,11 +88,11 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
                 ejxuser_actual.idUsuario, 
                 horario, 
                 duracion_min, 
-                exclude_id=ejercicio_id
+                exclude_id=ejxuser_id
             ):
                 raise ValueError("Ya tienes un ejercicio programado en ese horario")
         
-        ejxuser = self.ejxuser_repo.update(ejercicio_id, update_data)
+        ejxuser = self.ejxuser_repo.update(ejxuser_id, update_data)
         if not ejxuser:
             return None
         

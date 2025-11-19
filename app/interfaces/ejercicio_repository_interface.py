@@ -23,5 +23,5 @@ class IEjercicioRepository(ABC):
     
     @abstractmethod
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Ejercicio]:
-        """Obtener lista paginada de ejercicios"""
+        """Obtener lista de ejercicios"""
         pass

@@ -30,17 +30,17 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
             .all()
         )
 
-    def get_by_id(self, ejercicio_id: int) -> EjercicioUsuario:
+    def get_by_id(self, ejxuser_id: int) -> EjercicioUsuario:
         return (
             self.db.query(EjercicioUsuario)
-            .filter(EjercicioUsuario.id == ejercicio_id)
+            .filter(EjercicioUsuario.id == ejxuser_id)
             .first()
         )
 
-    def update(self, ejercicio_id: int, data: dict) -> EjercicioUsuario:
+    def update(self, ejxuser_id: int, data: dict) -> EjercicioUsuario:
         ejxuser = (
             self.db.query(EjercicioUsuario)
-            .filter(EjercicioUsuario.id == ejercicio_id)
+            .filter(EjercicioUsuario.id == ejxuser_id)
             .first()
         )
         if not ejxuser:
@@ -53,11 +53,11 @@ class EjercicioUsuarioRepository(IEjercicioUsuarioRepository):
         self.db.refresh(ejxuser)
         return ejxuser
 
-    def delete(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:
+    def delete(self, id_usuario: int, ejxuser_ids: list[int]) -> bool:
         deleted_count = (
             self.db.query(EjercicioUsuario)
             .filter(
-                EjercicioUsuario.id.in_(ejercicio_ids),
+                EjercicioUsuario.id.in_(ejxuser_ids),
                 EjercicioUsuario.idUsuario == id_usuario
             )
             .delete(synchronize_session=False)

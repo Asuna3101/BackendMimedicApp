@@ -21,17 +21,17 @@ class IEjercicioUsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, ejercicio_id: int) -> Optional[EjercicioUsuario]:
+    def get_by_id(self, ejxuser_id: int) -> Optional[EjercicioUsuario]:
         """Obtener un ejercicio_usuario por ID"""
         pass
 
     @abstractmethod
-    def update(self, id_ejxuser: int, data: dict) -> EjercicioUsuario:
+    def update(self, ejxuser_id: int, data: dict) -> EjercicioUsuario:
         """Actualizar un registro ejercicio_usuario"""
         pass
 
     @abstractmethod
-    def delete(self, id_usuario: int, ejercicio_ids: list[int]) -> bool:
+    def delete(self, id_usuario: int, ejxuser_ids: list[int]) -> bool:
         """Eliminar registros ejercicio_usuario"""
         pass
 

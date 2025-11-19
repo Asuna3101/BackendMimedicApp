@@ -15,12 +15,3 @@ class EjercicioController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error al obtener ejercicios: {str(e)}"
             )
-    
-    def get_or_create(self, nombre: str):
-        try:
-            return self.service.get_or_create(nombre)
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error al crear o obtener ejercicio: {str(e)}"
-            )
