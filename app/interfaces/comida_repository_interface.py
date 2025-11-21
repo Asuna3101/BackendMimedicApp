@@ -28,6 +28,11 @@ class IComidaRepository(ABC):
         pass
 
     @abstractmethod
+    def search_by_nombre(self, query: str, limit: int = 20) -> List[Alimento]:
+        """Busca comidas por nombre usando LIKE (case-insensitive)"""
+        pass
+
+    @abstractmethod
     def create(self, nombre: str, detalles: str | None = None) -> Alimento:
         pass
 

@@ -24,7 +24,15 @@ class ComidaUsuarioCreate(BaseModel):
     """Asociar una comida del catálogo a un usuario con categoría"""
     nombre: str
     detalles: Optional[str] = None
+    descripcion: Optional[str] = None  # Descripción personalizada del usuario
     idCategoria: Optional[int] = None  # 1=Recomendable, 2=No Recomendable
+
+
+class ComidaUsuarioUpdate(BaseModel):
+    """Actualizar una comida de usuario"""
+    nombre: Optional[str] = None
+    descripcion: Optional[str] = None
+    idCategoria: Optional[int] = None
 
 
 class ComidaUsuarioResponse(BaseModel):
@@ -34,7 +42,8 @@ class ComidaUsuarioResponse(BaseModel):
     usuario_id: int
     categoria_id: Optional[int] = None
     nombre: str  # del catálogo
-    detalles: str  # del catálogo
+    detalles: Optional[str] = None  # del catálogo
+    descripcion: Optional[str] = None  # descripción personalizada del usuario
     categoria_nombre: Optional[str] = None
     createdAt: Optional[datetime] = None
 

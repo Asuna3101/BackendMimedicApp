@@ -11,7 +11,6 @@ class Alimento(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String(200), nullable=False)
-    detalles = Column(Text, nullable=True)
 
     createdAt = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updatedAt = Column(DateTime(timezone=True), onupdate=func.now())

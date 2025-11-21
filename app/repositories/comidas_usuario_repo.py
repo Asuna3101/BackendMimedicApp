@@ -9,8 +9,13 @@ class ComidaUsuarioRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, comida_id: int, usuario_id: int, categoria_id: int | None = None) -> ComidaUsuario:
-        cu = ComidaUsuario(comida_id=comida_id, usuario_id=usuario_id, categoria_id=categoria_id)
+    def create(self, comida_id: int, usuario_id: int, categoria_id: int | None = None, descripcion: str | None = None) -> ComidaUsuario:
+        cu = ComidaUsuario(
+            comida_id=comida_id, 
+            usuario_id=usuario_id, 
+            categoria_id=categoria_id,
+            descripcion=descripcion
+        )
         self.db.add(cu)
         self.db.commit()
         self.db.refresh(cu)
@@ -32,6 +37,20 @@ class ComidaUsuarioRepository:
             .filter(ComidaUsuario.usuario_id == usuario_id)
             .all()
         )
+
+    def update(self, id: int, update_data: dict) -> ComidaUsuario | None:
+        """Actualiza un registro de comida_usuario"""
+        cu = self.db.query(ComidaUsuario).filter(ComidaUsuario.id == id).first()
+        if not cu:
+            return None
+        
+        for key, value in update_data.items():
+            if hasattr(cu, key) and value is not None:
+                setattr(cu, key, value)
+        
+        self.db.commit()
+        self.db.refresh(cu)
+        return cu
 
     def delete(self, id: int) -> bool:
         cu = self.db.query(ComidaUsuario).filter(ComidaUsuario.id == id).first()

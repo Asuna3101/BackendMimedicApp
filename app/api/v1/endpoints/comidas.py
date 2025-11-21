@@ -10,6 +10,7 @@ from app.schemas.comida import (
     ComidaOut, 
     ComidaCreate, 
     ComidaUsuarioCreate,
+    ComidaUsuarioUpdate,
     ComidaUsuarioResponse,
     ComidaUsuarioDeleteMultiple
 )
@@ -31,11 +32,15 @@ def listar_comidas_catalogo(
     return controller.listar_todas(skip=skip, limit=limit)
 
 
-@router.get("/{id}", response_model=ComidaOut)
-def obtener_comida_catalogo(id: int, db: Session = Depends(get_db)):
-    """Obtiene una comida específica del catálogo"""
+@router.get("/buscar/", response_model=list[ComidaOut])
+def buscar_comidas_catalogo(
+    q: str,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    """Busca comidas en el catálogo por nombre (autocompletado)"""
     controller = ComidaController(db)
-    return controller.obtener_por_id(id)
+    return controller.buscar_por_nombre(q, limit=limit)
 
 
 # ==================== COMIDAS DE USUARIO ====================
@@ -61,7 +66,8 @@ def registrar_comida_usuario(
         usuario_id=cu.usuario_id,
         categoria_id=cu.categoria_id,
         nombre=cu.comida.nombre,
-        detalles=cu.comida.detalles,
+        detalles=None,
+        descripcion=cu.descripcion,
         categoria_nombre=cu.categoria.nombre if cu.categoria else None,
         createdAt=cu.createdAt
     )
@@ -84,12 +90,37 @@ def listar_comidas_usuario(
             usuario_id=cu.usuario_id,
             categoria_id=cu.categoria_id,
             nombre=cu.comida.nombre,
-            detalles=cu.comida.detalles,
+            detalles=None,
+            descripcion=cu.descripcion,
             categoria_nombre=cu.categoria.nombre if cu.categoria else None,
             createdAt=cu.createdAt
         )
         for cu in comidas
     ]
+
+
+@router.put("/usuario/{id}", response_model=ComidaUsuarioResponse)
+def actualizar_comida_usuario(
+    id: int,
+    data: ComidaUsuarioUpdate,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+    """Actualiza una comida del usuario (descripción y/o categoría)"""
+    controller = ComidaUsuarioController(db)
+    cu = controller.actualizar(id, user.id, data)
+    
+    return ComidaUsuarioResponse(
+        id=cu.id,
+        comida_id=cu.comida_id,
+        usuario_id=cu.usuario_id,
+        categoria_id=cu.categoria_id,
+        nombre=cu.comida.nombre,
+        detalles=None,
+        descripcion=cu.descripcion,
+        categoria_nombre=cu.categoria.nombre if cu.categoria else None,
+        createdAt=cu.createdAt
+    )
 
 
 @router.delete("/usuario")
@@ -101,3 +132,12 @@ def eliminar_comidas_multiple(
     """Elimina múltiples comidas del usuario"""
     controller = ComidaUsuarioController(db)
     return controller.eliminar(user.id, data.ids)
+
+
+# ==================== CATÁLOGO - RUTAS CON PARÁMETROS ====================
+
+@router.get("/{id}", response_model=ComidaOut)
+def obtener_comida_catalogo(id: int, db: Session = Depends(get_db)):
+    """Obtiene una comida específica del catálogo"""
+    controller = ComidaController(db)
+    return controller.obtener_por_id(id)

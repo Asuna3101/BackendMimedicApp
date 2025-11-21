@@ -2,6 +2,7 @@
 Esquemas simplificados solo para Login
 """
 from pydantic import BaseModel, EmailStr
+from datetime import date
 
 
 # Esquemas para autenticación - Solo lo necesario para login
@@ -21,3 +22,14 @@ class UserCreate(BaseModel):
     nombre: str
     fecha_nacimiento: str  # ISO date (YYYY-MM-DD)
     celular: str
+
+
+class UserProfile(BaseModel):
+    id: int
+    nombre: str
+    correo: EmailStr
+    celular: str | None = None
+    fecha_nacimiento: date | None = None
+
+    class Config:
+        from_attributes = True

@@ -17,6 +17,16 @@ class ComidaController:
                 detail=f"Error al obtener alimentos: {str(e)}"
             )
 
+    def buscar_por_nombre(self, query: str, limit: int = 20):
+        """Busca comidas por nombre (autocompletado)"""
+        try:
+            return self.service.buscar_por_nombre(query, limit=limit)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error al buscar comidas: {str(e)}"
+            )
+
     def obtener_por_id(self, id: int):
         try:
             alm = self.service.obtener_por_id(id)

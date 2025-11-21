@@ -7,16 +7,26 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def seed_comidas():
     db = SessionLocal()
     comidas = [
-        ("Manzana", "Fruta fresca, buena fuente de fibra"),
-        ("Plátano", "Fuente de potasio"),
-        ("Papas fritas", "Alto en grasas y sal"),
-        ("Ensalada verde", "Lechuga, tomate, pepino"),
-        ("Refresco azucarado", "Bebida con alto contenido de azúcar"),
+        "Manzana",
+        "Plátano",
+        "Naranja",
+        "Papas fritas",
+        "Ensalada verde",
+        "Pollo a la plancha",
+        "Arroz integral",
+        "Pasta",
+        "Refresco azucarado",
+        "Agua",
+        "Jugo natural",
+        "Pizza",
+        "Hamburguesa",
+        "Ensalada de frutas",
+        "Yogurt",
     ]
-    for nombre, detalles in comidas:
+    for nombre in comidas:
         existe = db.query(Alimento).filter(Alimento.nombre == nombre).first()
         if not existe:
-            db.add(Alimento(nombre=nombre, detalles=detalles))
+            db.add(Alimento(nombre=nombre))
             print(f"Insertado alimento: {nombre}")
     db.commit()
     db.close()

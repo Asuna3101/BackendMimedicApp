@@ -19,14 +19,14 @@ class ComidaRepository(IComidaRepository):
     def get_or_create_alimento(self, nombre: str, detalles: str | None = None) -> Alimento:
         alm = self.get_by_nombre(nombre)
         if not alm:
-            alm = Alimento(nombre=nombre, detalles=detalles)
+            alm = Alimento(nombre=nombre)
             self.db.add(alm)
             self.db.commit()
             self.db.refresh(alm)
         return alm
 
     def create(self, nombre: str, detalles: str | None = None) -> Alimento:
-        alm = Alimento(nombre=nombre, detalles=detalles)
+        alm = Alimento(nombre=nombre)
         self.db.add(alm)
         self.db.commit()
         self.db.refresh(alm)
@@ -54,7 +54,19 @@ class ComidaRepository(IComidaRepository):
     def get_all(self, skip: int = 0, limit: int = 100):
         return (
             self.db.query(Alimento)
+            .order_by(Alimento.nombre.asc())
             .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def search_by_nombre(self, query: str, limit: int = 20) -> list[Alimento]:
+        """Busca comidas por nombre usando LIKE (case-insensitive)"""
+        search_pattern = f"%{query}%"
+        return (
+            self.db.query(Alimento)
+            .filter(Alimento.nombre.ilike(search_pattern))
+            .order_by(Alimento.nombre.asc())
             .limit(limit)
             .all()
         )

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # Seguridad
     SECRET_KEY: str = config("SECRET_KEY", default="your-secret-key-change-in-production")
     ALGORITHM: str = config("ALGORITHM", default="HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=30, cast=int)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=300, cast=int)
     
     # Base de datos
     DATABASE_URL: str = config("DATABASE_URL", default="sqlite:///./app.db")

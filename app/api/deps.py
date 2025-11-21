@@ -1,11 +1,18 @@
-# app/api/deps.py
+"""Dependencias compartidas (legacy)
+
+Alinear verificación de token con la usada en los endpoints v1, evitando
+inconsistencias en el claim "sub". En lugar de decodificar aquí el JWT y
+asumir que "sub" es un entero (id de usuario), delegamos en el controlador,
+que usa el servicio de autenticación para decodificar y resolver al usuario
+por correo (como emite actualmente el token).
+"""
 from fastapi import Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
-from jose import jwt, JWTError
 
 from app.core.database import SessionLocal
-from app.core.config import settings
+from app.controllers.user_controller import UserController
 from app.models.user import User
+
 
 def get_db():
     db = SessionLocal()
@@ -14,23 +21,20 @@ def get_db():
     finally:
         db.close()
 
-def get_current_user(authorization: str | None = Header(default=None),
-                     db: Session = Depends(get_db)) -> User:
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise HTTPException(status_code=401, detail="No autenticado",
-                            headers={"WWW-Authenticate": "Bearer"})
-    token = authorization.split(" ", 1)[1]
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        sub = payload.get("sub")
-        if sub is None:
-            raise HTTPException(status_code=401, detail="Token inválido (sin subject)")
-        user_id = int(sub)
-    except (JWTError, ValueError):
-        raise HTTPException(status_code=401, detail="Token inválido o expirado",
-                            headers={"WWW-Authenticate": "Bearer"})
 
-    user = db.get(User, user_id)   # en vez de db.query(User).get(...)
-    if not user:
-        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+def get_current_user(
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db),
+) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Cabecera Authorization inválida",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    token = authorization.replace("Bearer ", "", 1).strip()
+
+    controller = UserController(db)
+    user = controller.get_current_user_from_token(token)
     return user

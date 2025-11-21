@@ -13,6 +13,12 @@ class ComidaService(IComidaService):
     def listar_todas(self, skip: int = 0, limit: int = 100) -> list[Alimento]:
         return self.repo.get_all(skip=skip, limit=limit)
 
+    def buscar_por_nombre(self, query: str, limit: int = 20) -> list[Alimento]:
+        """Busca comidas por nombre (autocompletado)"""
+        if not query or len(query.strip()) == 0:
+            return []
+        return self.repo.search_by_nombre(query.strip(), limit=limit)
+
     def obtener_o_crear(self, nombre: str, detalles: str | None = None) -> Alimento:
         return self.repo.get_or_create_alimento(nombre, detalles)
 
