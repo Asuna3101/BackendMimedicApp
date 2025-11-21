@@ -21,6 +21,11 @@ class MedicamentoUsuarioService(IMedicamentoUsuarioService):
     def registrar_medicamento_usuario(self, id_usuario: int, data):
         # 1) Catálogos
         medicamento = self.med_repo.get_or_create_medicamento(data.nombre)
+        
+        # Validar que no exista el mismo medicamento activo
+        if self.medxuser_repo.existe_medicamento_activo(id_usuario, medicamento.id):
+            raise ValueError(f"Ya tienes el medicamento '{data.nombre}' registrado y activo")
+        
         unidad = self.unidad_repo.get_or_create_unidad(data.unidad)
 
         # Basic validation: fecha_fin must be >= fecha_inicio and frecuencia > 0

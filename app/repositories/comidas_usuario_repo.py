@@ -1,7 +1,7 @@
 """
 Repositorio para la tabla comidas_usuario
 """
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models.comidas_usuario import ComidaUsuario
 
 
@@ -22,6 +22,16 @@ class ComidaUsuarioRepository:
             .filter(ComidaUsuario.usuario_id == usuario_id)
             .all()
         )
+    
+    def get_by_user_with_relations(self, usuario_id: int):
+        """Obtiene comidas del usuario con relaciones cargadas (comida, categoria)"""
+        return (
+            self.db.query(ComidaUsuario)
+            .options(joinedload(ComidaUsuario.comida))
+            .options(joinedload(ComidaUsuario.categoria))
+            .filter(ComidaUsuario.usuario_id == usuario_id)
+            .all()
+        )
 
     def delete(self, id: int) -> bool:
         cu = self.db.query(ComidaUsuario).filter(ComidaUsuario.id == id).first()
@@ -30,3 +40,12 @@ class ComidaUsuarioRepository:
         self.db.delete(cu)
         self.db.commit()
         return True
+    
+    def delete_multiple(self, ids: list[int]) -> bool:
+        """Elimina múltiples registros por ID"""
+        if not ids:
+            return False
+        
+        deleted = self.db.query(ComidaUsuario).filter(ComidaUsuario.id.in_(ids)).delete(synchronize_session=False)
+        self.db.commit()
+        return deleted > 0

@@ -48,11 +48,26 @@ def _ensure_appt_status_column_and_indexes():
     - índice compuesto (user_id, status, starts_at)
     """
     with engine.connect() as conn:
+        dialect = conn.dialect.name.lower()
+
         # 1) Columna status (idempotente)
-        conn.execute(text("""
-            ALTER TABLE appointment_reminders
-            ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
-        """))
+        if dialect == 'sqlite':
+            # SQLite doesn't support ADD COLUMN IF NOT EXISTS. Check via PRAGMA.
+            res = conn.execute(text("PRAGMA table_info('appointment_reminders')"))
+            # Use mappings() to get dict-like rows portable across SQLAlchemy versions
+            rows = res.mappings().all()
+            cols = [r.get('name') for r in rows if r.get('name')]
+            if 'status' not in cols:
+                conn.execute(text("""
+                    ALTER TABLE appointment_reminders
+                    ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+                """))
+        else:
+            # Other DBs (Postgres, MySQL newer versions) can use IF NOT EXISTS safely
+            conn.execute(text("""
+                ALTER TABLE appointment_reminders
+                ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+            """))
 
         # 2) Backfill por si existieran filas con NULL (por esquemas previos raros)
         conn.execute(text("""
@@ -62,6 +77,7 @@ def _ensure_appt_status_column_and_indexes():
         """))
 
         # 3) Índice útil para /upcoming (idempotente en PG 9.5+)
+        # SQLite and Postgres support CREATE INDEX IF NOT EXISTS
         conn.execute(text("""
             CREATE INDEX IF NOT EXISTS ix_appt_user_status_starts_at
             ON appointment_reminders (user_id, status, starts_at)

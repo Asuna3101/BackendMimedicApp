@@ -17,4 +17,6 @@ from app.models.appointment_reminder import AppointmentReminder
 from app.models.comidas import Alimento
 from app.models.categoria import Categoria
 from app.models.comidas_usuario import ComidaUsuario
+from app.models.ejercicio import Ejercicio
+from app.models.ejercicioUsuario import EjercicioUsuario
 

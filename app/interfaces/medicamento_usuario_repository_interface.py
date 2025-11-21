@@ -15,6 +15,11 @@ class IMedicamentoUsuarioRepository(ABC):
         pass
     
     @abstractmethod
+    def existe_medicamento_activo(self, id_usuario: int, id_medicamento: int) -> bool:
+        """Verificar si el usuario ya tiene el medicamento activo (fecha_fin >= hoy)"""
+        pass
+    
+    @abstractmethod
     def generate_tomas(self, medxuser: MedicamentoUsuario) -> None:
         """Generar tomas para medicamento por usuario"""
         pass

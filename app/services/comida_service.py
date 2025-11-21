@@ -13,7 +13,7 @@ class ComidaService(IComidaService):
     def listar_todas(self, skip: int = 0, limit: int = 100) -> list[Alimento]:
         return self.repo.get_all(skip=skip, limit=limit)
 
-    def obtener_o_crear(self, nombre: str, detalles: str | None = None, recomendable: int = 1) -> Alimento:
+    def obtener_o_crear(self, nombre: str, detalles: str | None = None) -> Alimento:
         return self.repo.get_or_create_alimento(nombre, detalles)
 
     def obtener_por_id(self, id: int) -> Alimento | None:

@@ -7,7 +7,7 @@ from app.interfaces.medicamento_usuario_repository_interface import IMedicamento
 from app.models.medicamento import Medicamento
 from app.models.medicamentoUsuario import MedicamentoUsuario
 from app.models.toma import Toma
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from app.models.unidad import Unidad
 
@@ -106,3 +106,16 @@ class MedicamentoUsuarioRepository(IMedicamentoUsuarioRepository):
         self.db.delete(medxuser)
         self.db.commit()
         return True
+
+    def existe_medicamento_activo(self, id_usuario: int, id_medicamento: int) -> bool:
+        """Verificar si el usuario ya tiene el medicamento activo"""
+        return (
+            self.db.query(MedicamentoUsuario)
+            .filter(
+                MedicamentoUsuario.idUsuario == id_usuario,
+                MedicamentoUsuario.idMedicamento == id_medicamento,
+                MedicamentoUsuario.fecha_fin >= datetime.now(),
+            )
+            .first()
+            is not None
+        )
