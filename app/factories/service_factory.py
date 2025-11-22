@@ -57,6 +57,12 @@ from app.repositories.categoria_repo import CategoriaRepository
 from app.services.categoria_service import CategoriaService
 from app.repositories.comidas_usuario_repo import ComidaUsuarioRepository
 from app.services.comidas_usuario_service import ComidasUsuarioService
+from app.interfaces.profile_service_interface import IProfileService
+from app.services.profile_service import ProfileService
+from app.interfaces.report_service_interface import IReportService
+from app.services.report_service import ReportService
+from app.interfaces.recovery_service_interface import IRecoveryService
+from app.services.recovery_service import RecoveryService
 
 
 class ServiceFactory:
@@ -188,3 +194,18 @@ class ServiceFactory:
     @staticmethod
     def create_comida_usuario_service(cu_repo: ComidaUsuarioRepository) -> ComidasUsuarioService:
         return ComidasUsuarioService(cu_repo)
+
+    # ====== PROFILE ======
+    @staticmethod
+    def create_profile_service(user_repo: IUserRepository, hasher: IPasswordHasher) -> IProfileService:
+        return ProfileService(user_repo, hasher)
+
+    # ====== REPORTES ======
+    @staticmethod
+    def create_report_service(db: Session) -> IReportService:
+        return ReportService(db)
+
+    # ====== RECOVERY ======
+    @staticmethod
+    def create_recovery_service(user_repo: IUserRepository, hasher: IPasswordHasher) -> IRecoveryService:
+        return RecoveryService(user_repo, hasher)

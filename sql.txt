@@ -169,6 +169,14 @@ CREATE TRIGGER trg_usuarios_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Nuevas columnas para perfil/recuperación
+ALTER TABLE IF EXISTS usuarios
+    ADD COLUMN IF NOT EXISTS photo_url VARCHAR(255);
+
+ALTER TABLE IF EXISTS usuarios
+    ADD COLUMN IF NOT EXISTS recovery_code VARCHAR(10),
+    ADD COLUMN IF NOT EXISTS recovery_expires TIMESTAMPTZ;
+
 CREATE TRIGGER trg_medicamentos_updated_at
     BEFORE UPDATE ON medicamentos
     FOR EACH ROW

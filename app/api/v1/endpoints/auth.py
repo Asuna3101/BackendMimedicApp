@@ -8,9 +8,10 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.factories.service_factory import ServiceFactory
 from app.controllers.user_controller import UserController
+from app.controllers.recovery_controller import RecoveryController
 from app.services.auth_service import AuthService
 
-from app.schemas.user import Token, UserLogin, UserCreate
+from app.schemas.user import Token, UserLogin, UserCreate, RecoveryRequest, RecoveryConfirm
 
 router = APIRouter()
 
@@ -63,3 +64,17 @@ def register(user_create: UserCreate, db: Session = Depends(get_db)):
         return {"id": user.id, "correo": user.correo}
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post("/recover/request")
+def request_recover(body: RecoveryRequest, db: Session = Depends(get_db)):
+    ctl = RecoveryController(db)
+    ctl.request(body.email)
+    return {"message": "Si el correo existe, se enviará un código de verificación"}
+
+
+@router.post("/recover/confirm")
+def confirm_recover(body: RecoveryConfirm, db: Session = Depends(get_db)):
+    ctl = RecoveryController(db)
+    ctl.confirm(body.email, body.code, body.new_password)
+    return {"message": "Contraseña actualizada"}

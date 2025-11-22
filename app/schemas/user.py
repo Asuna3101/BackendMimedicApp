@@ -33,3 +33,13 @@ class UserProfile(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RecoveryRequest(BaseModel):
+    email: EmailStr
+
+
+class RecoveryConfirm(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str
