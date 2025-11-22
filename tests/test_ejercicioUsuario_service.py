@@ -1,6 +1,6 @@
 """
 Pruebas unitarias para EjercicioUsuarioService.actualizar_ejercicio_usuario
-Complejidad ciclomática: 5
+Complejidad ciclomática: 6
 python -m pytest tests/test_ejercicioUsuario_service.py -v
 """
 import unittest
@@ -206,6 +206,28 @@ class TestActualizarEjercicioUsuario(unittest.TestCase):
         self.ejxuser_repo_mock.get_by_id.assert_called_once_with(ejxuser_id)
         # No debe llamar a update ni check_horario_conflict
         self.ejxuser_repo_mock.update.assert_not_called()
+
+    def test_actualizar_ejercicio_update_retorna_none(self):
+        """
+        Test 6: Update del repositorio retorna None
+        Camino: El update falla después de pasar todas las validaciones
+        """
+        # Arrange
+        ejxuser_id = 5
+        update_data = EjercicioUsuarioUpdate(
+            notas="Notas nuevas"
+        )
+        
+        self.ejxuser_repo_mock.update.return_value = None  # Update falla
+        
+        # Act
+        result = self.service.actualizar_ejercicio_usuario(ejxuser_id, update_data)
+        
+        # Assert
+        self.assertIsNone(result)
+        self.ejxuser_repo_mock.update.assert_called_once()
+        # No debe intentar obtener el ejercicio si update falla
+        self.ejercicio_repo_mock.get_by_id.assert_not_called()
 
 
 if __name__ == '__main__':

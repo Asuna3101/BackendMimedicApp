@@ -66,7 +66,7 @@ class EjercicioUsuarioService(IEjercicioUsuarioService):
         ]
 
     def actualizar_ejercicio_usuario(self, ejxuser_id: int, data):
-        update_data = data.dict(exclude_unset=True)
+        update_data = data.model_dump(exclude_unset=True)
         
         if "nombre" in update_data:
             ejercicio = self.ejercicio_repo.get_or_create_ejercicio(update_data.pop("nombre"))
