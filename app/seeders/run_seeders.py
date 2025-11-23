@@ -9,14 +9,21 @@ from app.seeders.migrate_comidas_usuario import migrate_comidas_usuario
 
 def run_all_seeders():
     print("Ejecutando seeders...")
-    migrate_comidas_usuario()  # Ejecutar migración primero
-    seed_healthcare(drop=False)
-    seed_unidades()
-    seed_medicamentos()
-    seed_categorias()
-    seed_comidas()
-    seed_ejercicios()
-    print("Todos los seeders completados correctamente.")
+    tasks = [
+        ("migrar_comidas_usuario", migrate_comidas_usuario),
+        ("healthcare", lambda: seed_healthcare(drop=False)),
+        ("unidades", seed_unidades),
+        ("medicamentos", seed_medicamentos),
+        ("categorias", seed_categorias),
+        ("comidas", seed_comidas),
+        ("ejercicios", seed_ejercicios),
+    ]
+    for name, fn in tasks:
+        try:
+            fn()
+        except Exception as e:
+            print(f"❌ Seeder '{name}' falló: {e}")
+    print("Seeders ejecutados (revisa errores anteriores si los hubo).")
 
 if __name__ == "__main__":
     run_all_seeders()
