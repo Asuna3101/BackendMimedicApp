@@ -45,6 +45,7 @@ class RecoveryService(IRecoveryService):
         user.recovery_code = None
         user.recovery_expires = None
         self.user_repo.db.commit()
+        # Limpia sesión: opcional, aquí solo confirmamos
 
     def _send_email(self, to_email: str, code: str):
         subject = "MiMedicApp · Código de recuperación"
