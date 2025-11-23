@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Header
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
@@ -36,16 +36,24 @@ def download_module_report(
     module: str,
     format: str = "txt",
     token: str | None = Query(None, description="Token JWT opcional"),
+    authorization: str | None = Header(None, convert_underscores=False),
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
 ):
-    user = current_user
-    # Si viene token por query (ej. al abrir en navegador), úsalo
-    if token:
+    # Resolver usuario manualmente: prioridad header Authorization, luego token query
+    user = None
+    if authorization and authorization.startswith("Bearer "):
+        token_hdr = authorization.replace("Bearer ", "")
+        try:
+            user = UserController(db).get_current_user_from_token(token_hdr)
+        except Exception:
+            user = None
+    if user is None and token:
         try:
             user = UserController(db).get_current_user_from_token(token)
         except Exception:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido")
+            user = None
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido o ausente")
 
     ctl = ReportController(db)
     content, mime, filename = ctl.module_download(user.id, module, format)
