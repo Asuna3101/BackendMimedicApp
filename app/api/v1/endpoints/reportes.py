@@ -1,11 +1,12 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints.dependencies import get_current_user
 from app.core.database import get_db
 from app.controllers.report_controller import ReportController
+from app.controllers.user_controller import UserController
 from app.schemas.reportes import CompletedTasksResponse, ReportSummary, TimelineEvent
 
 router = APIRouter()
@@ -34,11 +35,20 @@ def get_module_report(
 def download_module_report(
     module: str,
     format: str = "txt",
+    token: str | None = Query(None, description="Token JWT opcional"),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
+    user = current_user
+    # Si viene token por query (ej. al abrir en navegador), úsalo
+    if token:
+        try:
+            user = UserController(db).get_current_user_from_token(token)
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido")
+
     ctl = ReportController(db)
-    content, mime, filename = ctl.module_download(current_user.id, module, format)
+    content, mime, filename = ctl.module_download(user.id, module, format)
     from fastapi.responses import Response
     return Response(
         content=content,

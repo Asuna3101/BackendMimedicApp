@@ -4,6 +4,16 @@ from typing import Optional
 from app.core.database import get_db
 from app.api.v1.endpoints.dependencies import get_current_user
 from app.controllers.profile_controller import ProfileController
+from pydantic import BaseModel
+
+
+class ChangePasswordBody(BaseModel):
+    old_password: str
+    new_password: str
+
+
+class DeleteAccountBody(BaseModel):
+    confirm: bool = False
 
 router = APIRouter()
 
@@ -40,24 +50,23 @@ async def update_photo_post(
 
 @router.put("/me/password", status_code=status.HTTP_200_OK)
 async def change_password(
-    old_password: str,
-    new_password: str,
+    body: ChangePasswordBody,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
     ctl = ProfileController(db)
-    ctl.change_password(current_user.id, old_password, new_password)
+    ctl.change_password(current_user.id, body.old_password, body.new_password)
     return {"message": "Password updated"}
 
 
 @router.delete("/me", status_code=status.HTTP_200_OK)
 async def delete_account(
-    confirm: bool = False,
+    body: DeleteAccountBody,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
     ctl = ProfileController(db)
-    ctl.delete_account(current_user.id, confirm)
+    ctl.delete_account(current_user.id, body.confirm)
     return {"message": "Cuenta desactivada"}
 
 
