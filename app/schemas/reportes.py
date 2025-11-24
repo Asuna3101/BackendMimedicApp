@@ -9,6 +9,8 @@ class ReportUser(BaseModel):
   correo: str
   fecha_nacimiento: Optional[datetime] = None
   fecha_creacion: Optional[datetime] = None
+  photo: Optional[str] = None
+  photo_content_type: Optional[str] = None
 
 class TimelineEvent(BaseModel):
   type: Literal["registro", "medicacion", "toma", "cita", "comida", "ejercicio"]

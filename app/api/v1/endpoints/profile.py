@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status, Query
 from sqlalchemy.orm import Session
 from typing import Optional
 from app.core.database import get_db
@@ -23,11 +23,11 @@ def _update_photo_impl(
     current_user,
 ):
     ctl = ProfileController(db)
-    file_path = None
-    if file:
-        file_path = ctl.service.save_upload(file.filename, file.file)
-    photo_url = ctl.update_photo(current_user.id, file_path, None)
-    return {"photo_url": photo_url}
+    if not file:
+        raise HTTPException(status_code=400, detail="Se requiere un archivo de imagen")
+    file_bytes = ctl.service.save_upload(file.filename, file.file)
+    photo_b64 = ctl.update_photo(current_user.id, file_bytes, file.content_type)
+    return {"photo": photo_b64, "content_type": file.content_type}
 
 
 @router.put("/me/photo", status_code=status.HTTP_200_OK)
@@ -61,12 +61,14 @@ async def change_password(
 
 @router.delete("/me", status_code=status.HTTP_200_OK)
 async def delete_account(
-    body: DeleteAccountBody,
+    body: DeleteAccountBody | None = None,
+    confirm: bool = Query(False),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
     ctl = ProfileController(db)
-    ctl.delete_account(current_user.id, body.confirm)
+    confirm_flag = confirm or (body.confirm if body else False)
+    ctl.delete_account(current_user.id, confirm_flag)
     return {"message": "Cuenta desactivada"}
 
 

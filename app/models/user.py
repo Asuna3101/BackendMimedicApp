@@ -1,5 +1,5 @@
 # app/models/user.py
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, Date, Numeric
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, Date, Numeric, LargeBinary
 from sqlalchemy.sql import func
 
 from app.core.database import Base
@@ -17,7 +17,8 @@ class User(Base):
     password = Column(String(200))  # Campo original si lo necesitas
     fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
     hashed_password = Column(String(200), nullable=False)
-    photo_url = Column(String(255), nullable=True)
+    photo = Column(LargeBinary, nullable=True)
+    photo_content_type = Column(String(50), nullable=True)
     recovery_code = Column(String(10), nullable=True)
     recovery_expires = Column(DateTime(timezone=True), nullable=True)
     

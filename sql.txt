@@ -171,7 +171,9 @@ CREATE TRIGGER trg_usuarios_updated_at
 
 -- Nuevas columnas para perfil/recuperación
 ALTER TABLE IF EXISTS usuarios
-    ADD COLUMN IF NOT EXISTS photo_url VARCHAR(255);
+    DROP COLUMN IF EXISTS photo_url,
+    ADD COLUMN IF NOT EXISTS photo BYTEA,
+    ADD COLUMN IF NOT EXISTS photo_content_type VARCHAR(50);
 
 ALTER TABLE IF EXISTS usuarios
     ADD COLUMN IF NOT EXISTS recovery_code VARCHAR(10),

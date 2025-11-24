@@ -2,6 +2,7 @@ from datetime import datetime, date, time
 from typing import List, Dict, Any
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+import base64
 from app.interfaces.report_service_interface import IReportService
 from app.models.medicamentoUsuario import MedicamentoUsuario
 from app.models.medicamento import Medicamento
@@ -21,6 +22,9 @@ class ReportService(IReportService):
     def get_summary(self, user_id: int) -> Dict[str, Any]:
         events = self._build_timeline(user_id)
         user = self._get_user(user_id)
+        photo_b64 = None
+        if getattr(user, "photo", None):
+            photo_b64 = base64.b64encode(user.photo).decode("utf-8")
         return {
             "user": {
                 "id": user.id,
@@ -28,6 +32,8 @@ class ReportService(IReportService):
                 "correo": user.correo,
                 "fecha_nacimiento": user.fecha_nacimiento,
                 "fecha_creacion": user.fecha_creacion,
+                "photo": photo_b64,
+                "photo_content_type": getattr(user, "photo_content_type", None),
             },
             "timeline": events,
         }

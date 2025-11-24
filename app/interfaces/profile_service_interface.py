@@ -3,8 +3,8 @@ from typing import Optional
 
 class IProfileService(ABC):
     @abstractmethod
-    def update_photo(self, user_id: int, file_path: Optional[str], url: Optional[str]) -> str:
-        """Actualiza la foto de perfil y devuelve la URL"""
+    def update_photo(self, user_id: int, file_bytes: bytes, content_type: Optional[str]) -> str:
+        """Actualiza la foto de perfil y devuelve la foto en base64"""
         raise NotImplementedError
 
     @abstractmethod

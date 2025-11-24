@@ -1,10 +1,16 @@
 from fastapi import FastAPI
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1.endpoints import auth, medicamentoxusuario, toma, unidad, healthcare, appointment_reminders, ejercicioxusuario, comidas, categorias, users, reportes, profile
 from app.core.database import engine
 from app.models import base
 from app.seeders.run_seeders import run_all_seeders
+
+# Reinicia el esquema en cada arranque según lo solicitado: drop, create, seed.
+with engine.begin() as conn:
+    conn.execute(text("DROP SCHEMA public CASCADE"))
+    conn.execute(text("CREATE SCHEMA public"))
 base.Base.metadata.create_all(bind=engine)
 run_all_seeders()
 app = FastAPI(

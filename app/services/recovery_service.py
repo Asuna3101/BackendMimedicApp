@@ -56,33 +56,40 @@ class RecoveryService(IRecoveryService):
 <head>
   <meta charset="utf-8">
   <style>
-    body {{ font-family: Arial, sans-serif; background:#f7fafc; margin:0; padding:0; }}
+    :root {{
+      --primary: #3A1855;
+      --accent: #E91E63;
+      --bg: #f7f1fb;
+      --card: #ffffff;
+      --text: #2c2738;
+    }}
+    body {{ font-family: 'Helvetica Neue', Arial, sans-serif; background:var(--bg); margin:0; padding:0; }}
     .card {{
-      max-width: 480px; margin:24px auto; background:#ffffff;
-      border-radius:12px; padding:24px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.08);
-      border:1px solid #e6ebf1;
+      max-width: 520px; margin:24px auto; background:var(--card);
+      border-radius:16px; padding:28px;
+      box-shadow:0 12px 28px rgba(58, 24, 85, 0.12);
+      border:1px solid #e8def4;
     }}
     .logo {{
-      width:48px; height:48px; background:#2f80ed;
-      color:#fff; border-radius:12px; display:flex;
+      width:52px; height:52px; background:var(--primary);
+      color:#fff; border-radius:14px; display:flex;
       align-items:center; justify-content:center;
-      font-weight:700; font-size:20px; margin-bottom:12px;
+      font-weight:800; font-size:22px; margin-bottom:14px;
     }}
-    .title {{ color:#1f2937; font-size:20px; font-weight:700; margin:0 0 12px 0; }}
-    .text {{ color:#4b5563; font-size:14px; line-height:1.6; margin:0 0 16px 0; }}
+    .title {{ color:var(--text); font-size:22px; font-weight:800; margin:0 0 12px 0; }}
+    .text {{ color:#4b4256; font-size:15px; line-height:1.7; margin:0 0 18px 0; }}
     .code {{
-      display:inline-block; background:#e0f2fe; color:#0f172a;
-      padding:12px 18px; border-radius:10px; letter-spacing:6px;
-      font-size:22px; font-weight:700; border:1px solid #bfdbfe;
+      display:inline-block; background:rgba(58,24,85,0.08); color:var(--primary);
+      padding:14px 20px; border-radius:14px; letter-spacing:8px;
+      font-size:24px; font-weight:800; border:1px solid rgba(58,24,85,0.12);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
     }}
-    .footer {{ color:#9ca3af; font-size:12px; margin-top:20px; }}
+    .footer {{ color:#7a6f86; font-size:12px; margin-top:20px; }}
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="logo">M</div>
-    <div class="title">Código de recuperación</div>
+    <div class="title">MiMedicApp 💊</div>
     <p class="text">Recibimos una solicitud para restablecer tu contraseña. Usa el siguiente código de 4 dígitos:</p>
     <div class="code">{spaced}</div>
     <p class="text">Este código expira en 10 minutos.<br>

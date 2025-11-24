@@ -10,8 +10,8 @@ class ProfileController:
         hasher = ServiceFactory.create_password_hasher()
         self.service: IProfileService = ServiceFactory.create_profile_service(user_repo, hasher)
 
-    def update_photo(self, user_id: int, file_path: str | None, url: str | None):
-        return self.service.update_photo(user_id, file_path, url)
+    def update_photo(self, user_id: int, file_bytes: bytes, content_type: str | None):
+        return self.service.update_photo(user_id, file_bytes, content_type)
 
     def change_password(self, user_id: int, old_password: str, new_password: str):
         if not old_password or not new_password:

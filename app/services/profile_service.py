@@ -1,5 +1,4 @@
-import os
-import shutil
+import base64
 from typing import Optional
 from fastapi import HTTPException
 from app.interfaces.profile_service_interface import IProfileService
@@ -12,24 +11,21 @@ class ProfileService(IProfileService):
         self.user_repo = user_repo
         self.hasher = hasher
         self.upload_dir = upload_dir
-        os.makedirs(self.upload_dir, exist_ok=True)
 
-    def update_photo(self, user_id: int, file_path: Optional[str], url: Optional[str]) -> str:
-        if not file_path and not url:
-            raise HTTPException(status_code=400, detail="Falta archivo o URL")
-        photo_url = url if url else file_path
+    def update_photo(self, user_id: int, file_bytes: bytes, content_type: Optional[str]) -> str:
+        if not file_bytes:
+            raise HTTPException(status_code=400, detail="Falta archivo")
         user = self.user_repo.get_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
-        user.photo_url = photo_url  # requiere columna; si no existe, se ignora
+        user.photo = file_bytes
+        user.photo_content_type = content_type
         self.user_repo.db.commit()
-        return photo_url
+        return base64.b64encode(file_bytes).decode("utf-8")
 
-    def save_upload(self, filename: str, fileobj) -> str:
-        dest = os.path.join(self.upload_dir, filename)
-        with open(dest, "wb") as f:
-            shutil.copyfileobj(fileobj, f)
-        return dest
+    def save_upload(self, filename: str, fileobj) -> bytes:
+        """Lee el archivo subido y retorna sus bytes."""
+        return fileobj.read()
 
     def change_password(self, user_id: int, old_password: str, new_password: str) -> None:
         user = self.user_repo.get_by_id(user_id)
@@ -54,7 +50,8 @@ class ProfileService(IProfileService):
         user = self.user_repo.get_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
-        user.is_active = False
+        # Hard delete cascades (FKs con ON DELETE CASCADE en modelos relacionados)
+        self.user_repo.db.delete(user)
         self.user_repo.db.commit()
 
     def recover_account(self, email: str) -> None:

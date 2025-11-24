@@ -30,6 +30,8 @@ class UserProfile(BaseModel):
     correo: EmailStr
     celular: str | None = None
     fecha_nacimiento: date | None = None
+    photo: str | None = None
+    photo_content_type: str | None = None
 
     class Config:
         from_attributes = True
