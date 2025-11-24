@@ -85,7 +85,8 @@ class ReportService(IReportService):
             }
         )
 
-        now = datetime.utcnow()
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
         med_rows = (
             self.db.query(MedicamentoUsuario, Medicamento, Unidad)
             .join(Medicamento, Medicamento.id == MedicamentoUsuario.idMedicamento)
